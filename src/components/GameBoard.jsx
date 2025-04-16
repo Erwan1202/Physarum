@@ -7,6 +7,7 @@ function App() {
     map,
     buildBaseAt,
     destroyBaseAt,
+    spreadTo,
     currentPlayerIndex,
     players,
     endTurn,
@@ -27,23 +28,23 @@ function App() {
 
   const handleCellClick = (x, y) => {
     if (gameover || currentPlayer.type !== "human") return
-  
-    const now = Date.now()
+
     const cell = map[y][x]
-  
-    // double click sur une case à soi = construire une base
+    const now = Date.now()
+
     if (lastClick.current && now - lastClick.current < 250) {
-      if (cell.owner === currentPlayer.id) {
-        buildBaseAt(x, y)
-      }
+      if (cell.owner === currentPlayer.id) buildBaseAt(x, y)
       lastClick.current = null
     } else {
       lastClick.current = now
-      // sinon, tenter de se propager
-      useGameStore.getState().spreadTo(x, y)
+      if (cell.owner !== currentPlayer.id) {
+        spreadTo(x, y)
+      } else {
+        setSelectedCoords({ x, y })
+      }
     }
   }
-  
+
   const confirmBuildBase = () => {
     if (selectedCoords) buildBaseAt(selectedCoords.x, selectedCoords.y)
     setSelectedCoords(null)
@@ -137,7 +138,7 @@ function App() {
 
           {currentPlayer.type === 'human' && !gameover && (
             <div className="text-yellow-300 text-center font-semibold animate-pulse">
-              ✋ Clic simple pour interagir, double clic pour construire une base.
+              ✋ Clic simple pour interagir, double clic sur votre territoire pour construire une base.
             </div>
           )}
 
