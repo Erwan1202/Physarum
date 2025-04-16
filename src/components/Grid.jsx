@@ -8,15 +8,15 @@ const Grid = ({ map, onCellClick }) => {
   const getColorClass = (owner) => {
     switch (owner) {
       case "player":
-        return "bg-green-600 text-white"
+        return "bg-green-600 text-transparent"
       case "bot1":
-        return "bg-red-600 text-white"
+        return "bg-red-600 text-transparent"
       case "bot2":
-        return "bg-fuchsia-600 text-white"
+        return "bg-fuchsia-600 text-transparent"
       case "bot3":
-        return "bg-blue-600 text-white"
+        return "bg-blue-600 text-transparent"
       default:
-        return "bg-gray-800 text-white"
+        return "bg-gray-800 text-transparent"
     }
   }
 
