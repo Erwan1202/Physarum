@@ -87,23 +87,24 @@ export const useGameStore = create((set, get) => ({
     })
   },
 
-  usePower: (powerName) => {
-    const { players, currentPlayerIndex} = get()
-    const currentPlayer = players[currentPlayerIndex]
-    const playerId = currentPlayer.id
-    const cooldowns = currentPlayer.cooldowns
-    const addLog = (message) => set({ log: [...get().log, message] })
+  buildBaseAt: (x, y) => {
+    const { map, players, currentPlayerIndex } = get()
+    const playerId = players[currentPlayerIndex].id
+    const cell = map[y][x]
 
-    if (!currentPlayer.powers[powerName]) {
-      addLog(`[${playerId}] ❌ Pouvoir ${powerName} non disponible.`)
-      return
-    }
-    if (cooldowns[powerName] > 0) {
-      addLog(`[${playerId}] ❌ Pouvoir ${powerName} en recharge (${cooldowns[powerName]} tours restants).`)
-      return
-    }
+    if (cell.owner !== playerId) return
+    if (cell.hasBase) return
 
-},
+    const newMap = [...map]
+    newMap[y] = [...newMap[y]]
+    newMap[y][x] = { ...cell, hasBase: true }
+
+    set((state) => ({
+      map: newMap,
+      log: [...state.log, `[${playerId}] 🏗️ A construit une base en (${x},${y})`],
+      energy: state.energy - 2,
+    }))
+  },
 
 
   triggerGameOver: (winnerId) => {
