@@ -141,6 +141,13 @@ export const useGameStore = create((set, get) => ({
     set({ map, players })
   },
 
+  triggerGameOver: (winnerId) => {
+    set({ gameOver: true, winner: winnerId })
+    const msg = `🏁 ${winnerId} remporte la partie !`
+    console.log(msg)
+    set((state) => ({ log: [...state.log, msg] }))
+  },
+
   spreadTo: (x, y, mode = 'standard') => {
     const { map, energy, players, currentPlayerIndex, actionsLeft } = get()
     const playerId = players[currentPlayerIndex].id
