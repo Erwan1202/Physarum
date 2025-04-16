@@ -49,13 +49,18 @@ export const useGameStore = create((set, get) => ({
   gameOver: false,
   Victory: false,
   lastConqueredCell: null,
+  log: [],
 
   spreadTo: (x, y) => {
-    const { map, energy, players, currentPlayerIndex } = get()
+    const { map, energy, players, currentPlayerIndex, log } = get()
     const playerId = players[currentPlayerIndex].id
 
+    const addLog = (message) => set({ log: [...get().log, message] })
+
     if (energy < 1) {
-      console.log(`[${playerId}] ❌ Pas assez d'énergie pour se propager.`)
+      const msg = `[${playerId}] ❌ Pas assez d'énergie pour se propager.`
+      console.log(msg)
+      addLog(msg)
       return
     }
 
@@ -66,7 +71,9 @@ export const useGameStore = create((set, get) => ({
     const isAdjacent = getAdjacentCells(x, y).some(([i, j]) => map[j][i]?.owner === playerId)
 
     if (!isAdjacent) {
-      console.log(`[${playerId}] ❌ Impossible de se propager ici, pas adjacent.`)
+      const msg = `[${playerId}] ❌ Impossible de se propager ici, pas adjacent.`
+      console.log(msg)
+      addLog(msg)
       return
     }
 
@@ -79,36 +86,44 @@ export const useGameStore = create((set, get) => ({
         cell.owner = playerId
         cell.biomass = 1
         newMap[y][x] = cell
+        const msg = `[${playerId}] ✅ S'est propagé en (${x},${y}) [libre]`
+        console.log(msg)
+        addLog(msg)
         setTimeout(() => set({ lastConqueredCell: null }), 500)
-        console.log(`[${playerId}] ✅ S'est propagé en (${x},${y}) [libre]`)
         return {
           map: newMap,
           energy: state.energy - 1,
           biomass: state.biomass + 1,
-          lastConqueredCell: { x, y }
+          lastConqueredCell: { x, y },
         }
       }
 
       if (cell.owner !== playerId) {
         const conquestChance = Math.random()
         if (energy < 2) {
-          console.log(`[${playerId}] ❌ Pas assez d'énergie pour conquérir.`)
+          const msg = `[${playerId}] ❌ Pas assez d'énergie pour conquérir.`
+          console.log(msg)
+          addLog(msg)
           return {}
         }
         if (conquestChance > 0.5) {
           cell.owner = playerId
           cell.biomass = 1
           newMap[y][x] = cell
+          const msg = `[${playerId}] ⚔️ A conquis la case (${x},${y}) ! [chance: ${conquestChance.toFixed(2)}]`
+          console.log(msg)
+          addLog(msg)
           setTimeout(() => set({ lastConqueredCell: null }), 500)
-          console.log(`[${playerId}] ⚔️ A conquis la case (${x},${y}) ! [chance: ${conquestChance.toFixed(2)}]`)
           return {
             map: newMap,
             energy: state.energy - 2,
             biomass: state.biomass + 2,
-            lastConqueredCell: { x, y }
+            lastConqueredCell: { x, y },
           }
         } else {
-          console.log(`[${playerId}] ❌ A échoué à conquérir (${x},${y}) [chance: ${conquestChance.toFixed(2)}]`)
+          const msg = `[${playerId}] ❌ A échoué à conquérir (${x},${y}) [chance: ${conquestChance.toFixed(2)}]`
+          console.log(msg)
+          addLog(msg)
         }
       }
 
@@ -132,13 +147,14 @@ export const useGameStore = create((set, get) => ({
     const energyGain = Math.floor(ownedCells / 5)
     const biomassGain = Math.floor(ownedCells / 10)
 
-    console.log(`💰 ${currentPlayerId} gagne ${energyGain}⚡ et ${biomassGain}🧬 grâce à ses ${ownedCells} territoires.`)
-
+    const msg = `💰 ${currentPlayerId} gagne ${energyGain}⚡ et ${biomassGain}🧬 grâce à ses ${ownedCells} territoires.`
+    console.log(msg)
     set((state) => ({
       currentPlayerIndex: nextIndex,
       energy: 5 + energyGain,
       biomass: state.biomass + biomassGain,
       turn: state.turn + 1,
+      log: [...state.log, msg],
     }))
 
     const nextPlayer = players[nextIndex]
@@ -233,10 +249,14 @@ export const useGameStore = create((set, get) => ({
 
     if (target) {
       const [tx, ty] = target
-      console.log(`🤖 ${botId} (${strategy}) tente de se propager en (${tx},${ty})`)
+      const msg = `🤖 ${botId} (${strategy}) tente de se propager en (${tx},${ty})`
+      console.log(msg)
+      set((state) => ({ log: [...state.log, msg] }))
       get().spreadTo(tx, ty)
     } else {
-      console.log(`🤖 ${botId} (${strategy}) ne trouve aucune case utile.`)
+      const msg = `🤖 ${botId} (${strategy}) ne trouve aucune case utile.`
+      console.log(msg)
+      set((state) => ({ log: [...state.log, msg] }))
     }
   },
 
@@ -251,5 +271,6 @@ export const useGameStore = create((set, get) => ({
     gameOver: false,
     Victory: false,
     lastConqueredCell: null,
+    log: [],
   })
 }))
