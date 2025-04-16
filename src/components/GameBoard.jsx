@@ -51,7 +51,7 @@ function App() {
 
   return (
     <div className={`min-h-screen ${darkMode ? "bg-[#0a0f1c] text-white" : "bg-white text-black"} p-4`}>
-      <div className="grid grid-cols-1 xl:grid-cols-[1fr_500px] gap-6 max-w-[1920px] mx-auto">
+      <div className="grid grid-cols-1 xl:grid-cols-[1fr_600px] gap-6 max-w-[1920px] mx-auto">
         {/* Colonne gauche = Jeu */}
         <div className="flex flex-col gap-4">
           <div className="flex justify-between items-center">
@@ -130,17 +130,19 @@ function App() {
 
         {/* Colonne droite = Historique */}
         <div className="w-full flex flex-col bg-[#111827] p-4 rounded max-h-[calc(100vh-100px)]">
-          <h2 className="text-xl font-bold mb-3">📜 Historique</h2>
-          <div className="flex gap-2 mb-2 text-xs flex-wrap sticky top-0 z-10 bg-[#111827] pb-2">
-            {['all', ...players.map(p => p.id)].map(p => (
-              <button
-                key={p}
-                onClick={() => setFilter(p)}
-                className={`px-2 py-1 rounded border ${filter === p ? 'bg-blue-500 text-white' : 'bg-transparent text-gray-300 hover:bg-gray-700'}`}
-              >
-                {p === 'all' ? 'Tous' : players.find(pl => pl.id === p)?.name || p}
-              </button>
-            ))}
+          <div className="sticky top-0 z-10 bg-[#111827] pb-2">
+            <h2 className="text-xl font-bold mb-3">📜 Historique</h2>
+            <div className="flex gap-2 mb-2 text-xs flex-wrap">
+              {['all', ...players.map(p => p.id)].map(p => (
+                <button
+                  key={p}
+                  onClick={() => setFilter(p)}
+                  className={`px-2 py-1 rounded border ${filter === p ? 'bg-blue-500 text-white' : 'bg-transparent text-gray-300 hover:bg-gray-700'}`}
+                >
+                  {p === 'all' ? 'Tous' : players.find(pl => pl.id === p)?.name || p}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="flex flex-col gap-1 text-sm overflow-y-auto pr-2">
