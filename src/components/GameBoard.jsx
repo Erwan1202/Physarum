@@ -12,9 +12,7 @@ function App() {
     resetGame,
     winner,
     log,
-    playerName,
-    difficulty,
-    botCount,
+    gameover
   } = useGameStore()
 
   const currentPlayer = players[currentPlayerIndex]
@@ -57,9 +55,6 @@ function App() {
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-4xl font-bold">Battle Grid: Physarum</h1>
-              <h2 className="text-md text-gray-400 italic">
-                Bienvenue <span className="font-semibold">{playerName || 'Joueur'}</span> — Difficulté : <span className="capitalize">{difficulty || 'Normal'}</span>, Bots : {botCount ?? 3}
-              </h2>
             </div>
             <button
               onClick={() => setDarkMode(!darkMode)}
@@ -126,6 +121,14 @@ function App() {
               🏆 {winner} a gagné la partie !
             </div>
           )}
+
+          {gameover && (
+            <div className="text-center mt-6 text-2xl font-bold text-red-400 animate-bounce">
+              🚫 La partie est terminée !
+            </div>
+          )
+
+          }
         </div>
 
         {/* Colonne droite = Historique */}

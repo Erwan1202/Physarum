@@ -5,9 +5,9 @@ const GRID_SIZE = 10
 const terrainTypes = ['normal', 'forest', 'swamp']
 
 const defaultPlayers = [
-  { id: 'player', type: 'human', color: 'green', name: 'Joueur', powers: {}, cooldowns: {} },
-  { id: 'bot1', type: 'bot', strategy: 'adaptive', color: 'red', name: 'Bot 1', powers: {}, cooldowns: {} },
-  { id: 'bot2', type: 'bot', strategy: 'adaptive', color: 'purple', name: 'Bot 2', powers: {}, cooldowns: {} },
+  { id: 'player', type: 'human', color: 'green', name: 'Joueur', powers: { reveal: true }, cooldowns: { reveal: 0 } },
+  { id: 'bot1', type: 'bot', strategy: 'adaptive', color: 'red', name: 'Bot 1', powers: { boost: true }, cooldowns: { boost: 0 } },
+  { id: 'bot2', type: 'bot', strategy: 'adaptive', color: 'purple', name: 'Bot 2', powers: { scout: true }, cooldowns: { scout: 0 } },
   { id: 'bot3', type: 'bot', strategy: 'adaptive', color: 'blue', name: 'Bot 3', powers: {}, cooldowns: {} },
 ]
 
@@ -61,13 +61,13 @@ export const useGameStore = create((set, get) => ({
 
   setCustomPlayers: ({ playerName = 'Joueur', botCount = 3 }) => {
     const bots = [
-      { id: 'bot1', type: 'bot', strategy: 'adaptive', color: 'red', name: 'Bot 1', powers: {}, cooldowns: {} },
-      { id: 'bot2', type: 'bot', strategy: 'adaptive', color: 'purple', name: 'Bot 2', powers: {}, cooldowns: {} },
+      { id: 'bot1', type: 'bot', strategy: 'adaptive', color: 'red', name: 'Bot 1', powers: { boost: true }, cooldowns: { boost: 0 } },
+      { id: 'bot2', type: 'bot', strategy: 'adaptive', color: 'purple', name: 'Bot 2', powers: { scout: true }, cooldowns: { scout: 0 } },
       { id: 'bot3', type: 'bot', strategy: 'adaptive', color: 'blue', name: 'Bot 3', powers: {}, cooldowns: {} },
     ].slice(0, botCount)
 
     const players = [
-      { id: 'player', type: 'human', color: 'green', name: playerName, powers: {}, cooldowns: {} },
+      { id: 'player', type: 'human', color: 'green', name: playerName, powers: { reveal: true }, cooldowns: { reveal: 0 } },
       ...bots,
     ]
 
@@ -85,6 +85,60 @@ export const useGameStore = create((set, get) => ({
       log: [],
       actionsLeft: 2,
     })
+  },
+
+  usePower: (powerName) => {
+    const { players, currentPlayerIndex, map } = get()
+    const currentPlayer = players[currentPlayerIndex]
+    const playerId = currentPlayer.id
+    const cooldowns = currentPlayer.cooldowns
+    const addLog = (message) => set({ log: [...get().log, message] })
+
+    if (!currentPlayer.powers[powerName]) {
+      addLog(`[${playerId}] ❌ Pouvoir ${powerName} non disponible.`)
+      return
+    }
+    if (cooldowns[powerName] > 0) {
+      addLog(`[${playerId}] ❌ Pouvoir ${powerName} en recharge (${cooldowns[powerName]} tours restants).`)
+      return
+    }
+
+    switch (powerName) {
+      case 'reveal': {
+        const visibleCells = []
+        for (let y = 0; y < GRID_SIZE; y++) {
+          for (let x = 0; x < GRID_SIZE; x++) {
+            if (map[y][x].owner && map[y][x].owner !== playerId) {
+              map[y][x].visibleTo.push(playerId)
+              visibleCells.push(`(${x},${y})`)
+            }
+          }
+        }
+        cooldowns.reveal = 3
+        addLog(`[${playerId}] 🔍 Utilise "Révélation" et aperçoit les cellules : ${visibleCells.join(', ')}`)
+        break
+      }
+      case 'boost': {
+        set((state) => ({ energy: state.energy + 3 }))
+        cooldowns.boost = 2
+        addLog(`[${playerId}] ⚡ Utilise "Boost" et gagne +3 énergie !`)
+        break
+      }
+      case 'scout': {
+        for (let y = 0; y < GRID_SIZE; y++) {
+          for (let x = 0; x < GRID_SIZE; x++) {
+            if (!map[y][x].owner) map[y][x].visibleTo.push(playerId)
+          }
+        }
+        cooldowns.scout = 4
+        addLog(`[${playerId}] 👁️ Utilise "Scout" pour révéler les zones neutres.`)
+        break
+      }
+      default:
+        addLog(`[${playerId}] ❌ Pouvoir inconnu.`)
+        return
+    }
+    set({ map, players })
   },
 
   spreadTo: (x, y, mode = 'standard') => {
@@ -169,63 +223,75 @@ export const useGameStore = create((set, get) => ({
   },
 
   endTurn: () => {
-    const { currentPlayerIndex, players, map } = get()
-    const nextIndex = (currentPlayerIndex + 1) % players.length
+    const state = get()
+    const { currentPlayerIndex, players, map } = state
     const currentPlayerId = players[currentPlayerIndex].id
-
-    let ownedCells = 0
-    let energyBonus = 0
-
-    for (let row of map) {
-      for (let cell of row) {
-        if (cell.owner === currentPlayerId) {
-          ownedCells++
-          if (cell.terrain === 'forest') energyBonus++
-          if (cell.terrain === 'swamp') energyBonus--
-        }
-      }
+  
+    // Vérifie combien de territoires possède le joueur actuel
+    const ownedCells = map.flat().filter(cell => cell.owner === currentPlayerId).length
+  
+    // Si le joueur n’a plus de territoire
+    if (ownedCells === 0) {
+      const msg = `💀 ${currentPlayerId} a été éliminé !`
+      console.log(msg)
+      set((s) => ({ log: [...s.log, msg] }))
     }
-
-    const energyGain = Math.max(Math.floor(ownedCells / 5) + energyBonus, 0)
+  
+    const nextIndex = (currentPlayerIndex + 1) % players.length
+  
+    // Calcul des gains d’énergie/biomasse
+    const energyGain = Math.floor(ownedCells / 5)
     const biomassGain = Math.floor(ownedCells / 10)
-
-    const msg = `💰 ${currentPlayerId} gagne ${energyGain}⚡ et ${biomassGain}🧬 (+ terrain)`
-    console.log(msg)
-    set((state) => ({
+  
+    const gainMsg = `💰 ${currentPlayerId} gagne ${energyGain}⚡ et ${biomassGain}🧬 grâce à ses ${ownedCells} territoires.`
+    console.log(gainMsg)
+  
+    set((s) => ({
       currentPlayerIndex: nextIndex,
       energy: 5 + energyGain,
-      biomass: state.biomass + biomassGain,
-      turn: state.turn + 1,
-      log: [...state.log, msg],
+      biomass: s.biomass + biomassGain,
+      turn: s.turn + 1,
+      log: [...s.log, gainMsg],
       actionsLeft: 2,
     }))
-
+  
     const nextPlayer = players[nextIndex]
     if (nextPlayer.type === 'bot') {
       setTimeout(() => {
-        for (let i = 0; i < 2; i++) {
-          get().playBotTurn(nextPlayer.id)
-        }
+        get().playBotTurn(nextPlayer.id)
         get().endTurn()
       }, 600)
     }
-
+  
+    // Vérifie la fin de partie
     const playerTerritories = {}
     for (let row of map) {
       for (let cell of row) {
-        if (cell.owner) playerTerritories[cell.owner] = (playerTerritories[cell.owner] || 0) + 1
+        if (cell.owner) {
+          playerTerritories[cell.owner] = (playerTerritories[cell.owner] || 0) + 1
+        }
       }
     }
+  
     const alivePlayers = Object.keys(playerTerritories)
-    if (alivePlayers.length === 1) set({ winner: alivePlayers[0], gameOver: true })
-    if (!alivePlayers.includes('player')) set({ gameOver: true })
-    if (!alivePlayers.some(p => p.startsWith('bot'))) set({ Victory: true, winner: 'player', gameOver: true })
+  
+    if (alivePlayers.length === 1) {
+      const winnerId = alivePlayers[0]
+      console.log(`🏆 ${winnerId} a gagné la partie !`)
+      set({ winner: winnerId, gameOver: true })
+      return
+    }
+  
+    if (!alivePlayers.includes('player')) {
+      console.log(`💀 Le joueur humain a été éliminé.`)
+      set({ gameOver: true })
+    }
   },
+  
 
   playBotTurn: (botId) => {
     const { map, players } = get()
     const GRID_SIZE = map.length
-    const bot = players.find(p => p.id === botId)
     const owned = []
 
     for (let y = 0; y < GRID_SIZE; y++) {
