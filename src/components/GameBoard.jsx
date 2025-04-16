@@ -65,6 +65,9 @@ function App() {
       bot1: "text-red-400",
       bot2: "text-purple-400",
       bot3: "text-blue-400",
+        bot4: "text-yellow-400",
+        bot5: "text-orange-400",
+        bot6: "text-pink-400",
     }[id] || "text-white"
   }
 

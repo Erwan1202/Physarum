@@ -15,6 +15,12 @@ const Grid = ({ map, onCellClick }) => {
         return "bg-fuchsia-600 text-white"
       case "bot3":
         return "bg-blue-600 text-white"
+        case "bot4":
+        return "bg-yellow-600 text-white"
+        case "bot5":
+        return "bg-orange-600 text-white"
+        case "bot6":
+        return "bg-pink-600 text-white"
       default:
         return "bg-gray-800 text-transparent"
     }

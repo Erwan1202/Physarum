@@ -9,6 +9,9 @@ const defaultPlayers = [
   { id: 'bot1', type: 'bot', strategy: 'adaptive', color: 'red', name: 'Bot 1', powers: { boost: true }, cooldowns: { boost: 0 } },
   { id: 'bot2', type: 'bot', strategy: 'adaptive', color: 'purple', name: 'Bot 2', powers: { scout: true }, cooldowns: { scout: 0 } },
   { id: 'bot3', type: 'bot', strategy: 'adaptive', color: 'blue', name: 'Bot 3', powers: {}, cooldowns: {} },
+  { id : 'bot4', type: 'bot', strategy: 'adaptive', color: 'yellow', name: 'Bot 4', powers: {}, cooldowns: {} },
+  { id : 'bot5', type: 'bot', strategy: 'adaptive', color: 'orange', name: 'Bot 5', powers: {}, cooldowns: {} },
+  { id : 'bot6', type: 'bot', strategy: 'adaptive', color: 'pink', name: 'Bot 6', powers: {}, cooldowns: {} },
 ]
 
 const createInitialMap = (players) => {
@@ -64,6 +67,9 @@ export const useGameStore = create((set, get) => ({
       { id: 'bot1', type: 'bot', strategy: 'adaptive', color: 'red', name: 'Bot 1', powers: { boost: true }, cooldowns: { boost: 0 } },
       { id: 'bot2', type: 'bot', strategy: 'adaptive', color: 'purple', name: 'Bot 2', powers: { scout: true }, cooldowns: { scout: 0 } },
       { id: 'bot3', type: 'bot', strategy: 'adaptive', color: 'blue', name: 'Bot 3', powers: {}, cooldowns: {} },
+        { id: 'bot4', type: 'bot', strategy: 'adaptive', color: 'yellow', name: 'Bot 4', powers: {}, cooldowns: {} },
+        { id: 'bot5', type: 'bot', strategy: 'adaptive', color: 'orange', name: 'Bot 5', powers: {}, cooldowns: {} },
+        { id: 'bot6', type: 'bot', strategy: 'adaptive', color: 'pink', name: 'Bot 6', powers: {}, cooldowns: {} },
     ].slice(0, botCount)
 
     const players = [
