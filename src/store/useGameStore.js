@@ -138,6 +138,7 @@ export const useGameStore = create((set, get) => ({
     const { map, players, currentPlayerIndex } = get()
     const playerId = players[currentPlayerIndex].id
     const cell = map[y][x]
+    const state = get()
 
     if (!cell.hasBase) return
     if (cell.owner !== playerId) return
@@ -145,7 +146,8 @@ export const useGameStore = create((set, get) => ({
     const newMap = [...map]
     newMap[y] = [...newMap[y]]
     newMap[y][x] = { ...cell, hasBase: false }
-
+    state.energy += 2
+    
     set((state) => ({
       map: newMap,
       log: [...state.log, `[${playerId}] 💥 A détruit sa base en (${x},${y})`]
