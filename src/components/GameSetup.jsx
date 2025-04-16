@@ -43,7 +43,7 @@ function GameSetup({ onStart }) {
           </select>
         </div>
 
-        <div>
+        {/*<div>
           <label className="block mb-1 text-sm">🤖 Nombre de bots :</label>
           <input
             type="number"
@@ -53,7 +53,7 @@ function GameSetup({ onStart }) {
             value={botCount}
             onChange={(e) => setBotCount(parseInt(e.target.value))}
           />
-        </div>
+        </div>*/}
 
         <button
           onClick={handleStart}
