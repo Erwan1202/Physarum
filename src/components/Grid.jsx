@@ -1,6 +1,9 @@
 import React from "react"
+import { useGameStore } from "../store/useGameStore"
 
 const Grid = ({ map, onCellClick }) => {
+  const lastConqueredCell = useGameStore((s) => s.lastConqueredCell)
+
   const getColorClass = (owner) => {
     if (owner === "player") return "bg-green-500 hover:bg-green-600 text-white"
     if (owner === "bot1") return "bg-red-500 hover:bg-red-600 text-white"
@@ -13,20 +16,25 @@ const Grid = ({ map, onCellClick }) => {
     <div className="flex flex-col items-center gap-4">
       <div
         className="grid gap-1"
-        style={{
-          gridTemplateColumns: `repeat(${map.length}, 2rem)`,
-        }}
+        style={{ gridTemplateColumns: `repeat(${map.length}, 2rem)` }}
       >
         {map.map((row, y) =>
-          row.map((cell, x) => (
-            <button
-              key={`${x}-${y}`}
-              onClick={() => onCellClick(x, y)}
-              className={`w-8 h-8 border rounded text-xs font-bold transition duration-150 ${getColorClass(cell.owner)}`}
-            >
-              {cell.biomass > 0 ? cell.biomass : ""}
-            </button>
-          ))
+          row.map((cell, x) => {
+            const isLastConquered =
+              lastConqueredCell?.x === x && lastConqueredCell?.y === y
+
+            return (
+              <button
+                key={`${x}-${y}`}
+                onClick={() => onCellClick(x, y)}
+                className={`w-8 h-8 border rounded text-xs font-bold transition duration-150
+                  ${getColorClass(cell.owner)} 
+                  ${isLastConquered ? "ring-4 ring-yellow-400 scale-110 z-10" : ""}`}
+              >
+                {cell.biomass > 0 ? cell.biomass : ""}
+              </button>
+            )
+          })
         )}
       </div>
 
