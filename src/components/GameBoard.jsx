@@ -1,5 +1,5 @@
-import Grid from "./components/Grid"
-import { useGameStore } from "./store/useGameStore"
+import Grid from "./Grid"
+import { useGameStore } from "./../store/useGameStore"
 import { useEffect, useRef, useState } from "react"
 
 function App() {
