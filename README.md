@@ -1,32 +1,81 @@
-Battle Grid: Physarum - Guide de Déploiement
+# Battle Grid: Physarum
 
-🚀 Déploiement sur Vercel
---------------------------
-1. Push du projet sur GitHub :
-   - git init
-   - git add .
-   - git commit -m "Déploiement version prod"
-   - git remote add origin https://github.com/<utilisateur>/<repo>.git
-   - git push -u origin main
+Battle Grid: Physarum est un jeu de stratégie au tour par tour dans lequel vous incarnez un organisme intelligent de type *Physarum*.
+Déployez-vous sur une carte, construisez des bases, gérez votre énergie et affrontez des bots adaptatifs pour dominer la grille.
 
-2. Aller sur https://vercel.com
-   - Se connecter avec GitHub
-   - Cliquer sur "New Project"
-   - Sélectionner le repo
-   - Laisser les paramètres par défaut (Vite)
-   - Cliquer sur "Deploy"
+## 🎮 Fonctionnalités
 
-🛠️ Commandes utiles
----------------------
-- Lancer le dev local : `npm run dev`
-- Build de production : `npm run build`
-- Prévisualisation du build : `npm run preview`
+- Carte 10x10 avec types de terrains aléatoires
+- Propagation contrôlée avec énergie et biomasse
+- Construction et destruction de bases (avec bonus)
+- Tour par tour avec bots jouant automatiquement
+- Historique complet avec filtres par joueur
+- Interface visuelle réactive et responsive (Dark/Light Mode)
+- Détection de fin de partie (victoire/défaite)
+- Double-clic sur vos cases pour construire une base
 
-🧠 Conseils supplémentaires
----------------------------
-- Modifier `vite.config.js` si besoin d’un sous-répertoire
-- Ajouter un `favicon.ico` dans `public/`
-- Ajouter une page 404 personnalisée (fichier `404.html`)
-- Ajouter un fichier `README.md` dans le repo GitHub
+## 🛠️ Technologies utilisées
 
-🌐 Résultat attendu : https://physarum-five.vercel.app/
+- React + Zustand (store)
+- Tailwind CSS (design)
+- Vite (pour le dev server et le build)
+- JavaScript ES6
+
+## 🚀 Lancer le projet en local
+
+```bash
+# 1. Clonez le repo
+git clone https://github.com/Erwan1202/Physarum.git
+cd battle-grid
+
+# 2. Installez les dépendances
+npm install
+
+# 3. Lancez le projet
+npm run dev
+```
+
+## 🧾 Déploiement
+
+### Avec Vercel (recommandé)
+- Connectez votre repo GitHub sur [vercel.com](https://vercel.com)
+- Cliquez sur "New Project", choisissez le repo et déployez.
+- Aucun réglage spécial requis.
+
+### Build manuel
+
+```bash
+npm run build
+```
+Les fichiers statiques seront dans `dist/`.
+
+## 📁 Arborescence simplifiée
+
+```
+.
+├── public/           # favicon, index.html
+├── src/
+│   ├── components/
+│   ├── store/        # Zustand: useGameStore.js
+│   ├── Grid.jsx      # Affichage de la grille
+│   ├── GameBoard.jsx # Interface principale
+├── index.css
+├── main.jsx
+├── vite.config.js
+└── README.md
+```
+
+## ✨ Idées futures
+
+- Multijoueur local ou en ligne
+- Types de bots différents (agressif, défensif, expansif...)
+- Effets de terrain
+- Visibilité limitée
+- Pouvoirs spéciaux
+
+---
+
+Le lien : https://physarum-five.vercel.app/
+
+> Pleurez sur notre poulet 
+Signé Erwan et Rayane.
