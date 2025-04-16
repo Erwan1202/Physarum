@@ -10,6 +10,7 @@ function App() {
   const currentPlayerIndex = useGameStore((s) => s.currentPlayerIndex)
   const players = useGameStore((s) => s.players)
   const endTurn = useGameStore((s) => s.endTurn)
+  const resetGame = useGameStore((s) => s.resetGame)
 
   const currentPlayer = players[currentPlayerIndex]
 
@@ -40,6 +41,12 @@ function App() {
             Fin de tour
           </button>
           
+          <button
+          onClick={resetGame}
+          className="bg-blue-600 px-4 py-2 rounded text-white font-semibold hover:bg-blue-700 transition hover:scale-105 active:scale-95"
+        >
+          Nouvelle Partie
+        </button>
 
         </div>
       )}
