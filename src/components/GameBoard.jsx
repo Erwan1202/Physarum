@@ -56,10 +56,7 @@ function App() {
       <div className="flex flex-col gap-4 p-4 w-full lg:w-3/4">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-4xl font-bold">Battle Grid: Physarum</h1>
-            <h2 className="text-md text-gray-400 italic">
-              Bienvenue <span className="font-semibold">{playerName || 'Joueur'}</span> — Difficulté : <span className="capitalize">{difficulty || 'Normal'}</span>, Bots : {botCount ?? 3}
-            </h2>
+            <h1 className="text-4xl font-bold">Battle Grid: Physarum</h1>  
           </div>
           <button
             onClick={() => setDarkMode(!darkMode)}
