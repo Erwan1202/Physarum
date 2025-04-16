@@ -45,28 +45,7 @@ const Grid = ({ map, onCellClick }) => {
         )}
       </div>
 
-      <div className="flex flex-wrap justify-center gap-4 text-sm text-white mt-4">
-        <span className="flex items-center gap-1">
-          <span className="w-4 h-4 bg-green-600 rounded-sm inline-block" />
-          Joueur
-        </span>
-        <span className="flex items-center gap-1">
-          <span className="w-4 h-4 bg-red-600 rounded-sm inline-block" />
-          Bot 1
-        </span>
-        <span className="flex items-center gap-1">
-          <span className="w-4 h-4 bg-fuchsia-600 rounded-sm inline-block" />
-          Bot 2
-        </span>
-        <span className="flex items-center gap-1">
-          <span className="w-4 h-4 bg-blue-600 rounded-sm inline-block" />
-          Bot 3
-        </span>
-        <span className="flex items-center gap-1">
-          <span className="w-4 h-4 bg-gray-800 border border-white rounded-sm inline-block" />
-          Vide
-        </span>
-      </div>
+      
     </div>
   )
 }
