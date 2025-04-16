@@ -2,7 +2,7 @@ import Grid from "./components/Grid"
 import { useGameStore } from "./store/useGameStore"
 
 function App() {
-  const {map, spreadTo, energy, biomass, turn, currentPlayerIndex, players, endTurn, resetGame, winner} = useGameStore()
+  const {map, spreadTo, currentPlayerIndex, players, endTurn, resetGame, winner} = useGameStore()
 
   const currentPlayer = players[currentPlayerIndex]
 
