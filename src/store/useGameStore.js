@@ -3,10 +3,10 @@ import { create } from 'zustand'
 const GRID_SIZE = 10
 
 const players = [
-  { id: 'player', type: 'human' },
-  { id: 'bot1', type: 'bot', strategy: 'random' },
-  { id: 'bot2', type: 'bot', strategy: 'aggressive' },
-  { id: 'bot3', type: 'bot', strategy: 'defensive' },
+  { id: 'player', type: 'human', color: 'green' },
+  { id: 'bot1', type: 'bot', strategy: 'random', color: 'red' },
+  { id: 'bot2', type: 'bot', strategy: 'aggressive', color: 'purple' },
+  { id: 'bot3', type: 'bot', strategy: 'defensive', color: 'blue' },
 ]
 
 const createInitialMap = (players) => {
@@ -83,19 +83,27 @@ export const useGameStore = create((set, get) => ({
         }
       }
 
-      if (cell.owner !== playerId && cell.biomass < 1) {
-        cell.owner = playerId
-        cell.biomass = 1
-        newMap[y][x] = cell
-        console.log(`[${playerId}] ⚔️ A conquis la case (${x},${y}) !`)
-        return {
-          map: newMap,
-          energy: state.energy - 2,
-          biomass: state.biomass + 2,
+      if (cell.owner !== playerId) {
+        const conquestChance = Math.random()
+        if (energy < 2) {
+          console.log(`[${playerId}] ❌ Pas assez d'énergie pour conquérir.`)
+          return {}
+        }
+        if (conquestChance > 0.5) {
+          cell.owner = playerId
+          cell.biomass = 1
+          newMap[y][x] = cell
+          console.log(`[${playerId}] ⚔️ A conquis la case (${x},${y}) ! [chance: ${conquestChance.toFixed(2)}]`)
+          return {
+            map: newMap,
+            energy: state.energy - 2,
+            biomass: state.biomass + 2,
+          }
+        } else {
+          console.log(`[${playerId}] ❌ A échoué à conquérir (${x},${y}) [chance: ${conquestChance.toFixed(2)}]`)
         }
       }
 
-      console.log(`[${playerId}] ❌ Impossible de conquérir la case (${x},${y})`)
       return {}
     })
   },
@@ -105,22 +113,18 @@ export const useGameStore = create((set, get) => ({
     const nextIndex = (currentPlayerIndex + 1) % players.length
     const currentPlayerId = players[currentPlayerIndex].id
 
-    // Compter les territoires
-  const map = get().map
-  let ownedCells = 0
-  for (let row of map) {
-    for (let cell of row) {
-      if (cell.owner === currentPlayerId) {
-        ownedCells++
+    const map = get().map
+    let ownedCells = 0
+    for (let row of map) {
+      for (let cell of row) {
+        if (cell.owner === currentPlayerId) ownedCells++
       }
     }
-  }
 
-  // Bonus par case possédée
-  const energyGain = Math.floor(ownedCells / 5)
-  const biomassGain = Math.floor(ownedCells / 10)
+    const energyGain = Math.floor(ownedCells / 5)
+    const biomassGain = Math.floor(ownedCells / 10)
 
-  console.log(`💰 ${currentPlayerId} gagne ${energyGain}⚡ et ${biomassGain}🧬 grâce à ses ${ownedCells} territoires.`)
+    console.log(`💰 ${currentPlayerId} gagne ${energyGain}⚡ et ${biomassGain}🧬 grâce à ses ${ownedCells} territoires.`)
 
     set((state) => ({
       currentPlayerIndex: nextIndex,
