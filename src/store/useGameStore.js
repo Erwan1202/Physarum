@@ -146,7 +146,7 @@ export const useGameStore = create((set, get) => ({
     const msg = `🏁 ${winnerId} remporte la partie !`
     console.log(msg)
     set((state) => ({ log: [...state.log, msg] }))
-  },
+  },  
 
   spreadTo: (x, y, mode = 'standard') => {
     const { map, energy, players, currentPlayerIndex, actionsLeft } = get()
@@ -290,9 +290,9 @@ export const useGameStore = create((set, get) => ({
     }
   
     if (!alivePlayers.includes('player')) {
-      console.log(`💀 Le joueur humain a été éliminé.`)
-      set({ gameOver: true })
-    }
+        console.log(`💀 Le joueur a été éliminé !`)
+        get().triggerGameOver('bots')
+      }      
   },
   
 
