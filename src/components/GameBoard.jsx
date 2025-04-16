@@ -5,7 +5,8 @@ import { useEffect, useRef, useState } from "react"
 function App() {
   const {
     map,
-    spreadTo,
+    buildBaseAt,
+    destroyBaseAt,
     currentPlayerIndex,
     players,
     endTurn,
@@ -22,11 +23,22 @@ function App() {
   const [filter, setFilter] = useState("all")
   const logEndRef = useRef(null)
   const [darkMode, setDarkMode] = useState(true)
+  const [selectedCoords, setSelectedCoords] = useState(null)
 
   const handleCellClick = (x, y) => {
     if (currentPlayer.type === "human") {
-      spreadTo(x, y)
+      setSelectedCoords({ x, y })
     }
+  }
+
+  const confirmBuildBase = () => {
+    if (selectedCoords) buildBaseAt(selectedCoords.x, selectedCoords.y)
+    setSelectedCoords(null)
+  }
+
+  const confirmDestroyBase = () => {
+    if (selectedCoords) destroyBaseAt(selectedCoords.x, selectedCoords.y)
+    setSelectedCoords(null)
   }
 
   const countOwnedCells = (playerId) => {
@@ -78,25 +90,43 @@ function App() {
             </div>
           </div>
 
-          
-
           <div className="bg-black/50 p-4 rounded text-sm font-mono mb-4">
             <p className="mb-1 text-green-400 font-bold">🎮 {currentPlayer.name}</p>
             <p>⚡ Énergie : <span className="text-yellow-300">{energy}</span> 
              🧬 Biomasse : <span className="text-pink-300">{biomass}</span>
              ⏳ Tour : <span className="text-gray-300">{turn}</span></p>
-        </div>
+          </div>
 
           <Grid map={map} onCellClick={handleCellClick} />
+
+          {selectedCoords && (
+            <div className="bg-gray-800 p-3 rounded mt-2 flex gap-4 justify-center">
+              <button
+                onClick={confirmBuildBase}
+                className="bg-green-600 px-4 py-2 rounded hover:bg-green-700 transition"
+              >
+                🏗️ Construire une base en ({selectedCoords.x}, {selectedCoords.y})
+              </button>
+              <button
+                onClick={confirmDestroyBase}
+                className="bg-red-600 px-4 py-2 rounded hover:bg-red-700 transition"
+              >
+                💥 Détruire la base
+              </button>
+              <button
+                onClick={() => setSelectedCoords(null)}
+                className="bg-gray-600 px-4 py-2 rounded hover:bg-gray-700 transition"
+              >
+                ❌ Annuler
+              </button>
+            </div>
+          )}
 
           {currentPlayer.type === 'human' && (
             <div className="text-yellow-300 text-center font-semibold animate-pulse">
               ✋ À vous de jouer ! Cliquez sur une case adjacente.
             </div>
           )}
-
-
-          
 
           {winner && (
             <div className="text-center mt-6 text-2xl font-bold text-yellow-400 animate-bounce">
@@ -108,12 +138,9 @@ function App() {
             <div className="text-center mt-6 text-2xl font-bold text-red-400 animate-bounce">
               🚫 La partie est terminée !
             </div>
-          )
+          )}
 
-          }
-          
-
-<div className="flex gap-4 mt-2">
+          <div className="flex gap-4 mt-2">
             <button
               onClick={endTurn}
               className="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700 transition"
