@@ -12,7 +12,10 @@ function App() {
     resetGame,
     winner,
     log,
-    gameover
+    gameover,
+    biomass,
+    energy,
+    turn,
   } = useGameStore()
 
   const currentPlayer = players[currentPlayerIndex]
@@ -100,6 +103,14 @@ function App() {
               <span className="w-4 h-4 bg-gray-500 border border-white rounded-sm" /> Vide
             </span>
           </div>
+
+          <div className="bg-black/50 p-4 rounded text-sm font-mono mb-4">
+            <p className="mb-1 text-green-400 font-bold">🎮 {currentPlayer.name} ({currentPlayer.id})</p>
+            <p>⚡ Énergie : <span className="text-yellow-300">{energy}</span></p>
+            <p>🧬 Biomasse : <span className="text-pink-300">{biomass}</span></p>
+            <p>⏳ Tour : <span className="text-gray-300">{turn}</span></p>
+        </div>
+
 
           <div className="flex gap-4 mt-2">
             <button
