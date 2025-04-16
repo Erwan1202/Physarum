@@ -96,14 +96,32 @@ export const useGameStore = create((set, get) => ({
   endTurn: () => {
     const { currentPlayerIndex, players } = get()
     const nextIndex = (currentPlayerIndex + 1) % players.length
-    console.log(`🔁 Fin du tour du joueur ${players[currentPlayerIndex].id}`)
-
-    set({
+    const currentPlayerId = players[currentPlayerIndex].id
+  
+    // Compter les territoires
+    const map = get().map
+    let ownedCells = 0
+    for (let row of map) {
+      for (let cell of row) {
+        if (cell.owner === currentPlayerId) {
+          ownedCells++
+        }
+      }
+    }
+  
+    // Bonus par case possédée
+    const energyGain = Math.floor(ownedCells / 5)
+    const biomassGain = Math.floor(ownedCells / 10)
+  
+    console.log(`💰 ${currentPlayerId} gagne ${energyGain}⚡ et ${biomassGain}🧬 grâce à ses ${ownedCells} territoires.`)
+  
+    set((state) => ({
       currentPlayerIndex: nextIndex,
-      energy: 5,
-      turn: get().turn + 1,
-    })
-
+      energy: 5 + energyGain,
+      biomass: state.biomass + biomassGain,
+      turn: state.turn + 1,
+    }))
+  
     const nextPlayer = players[nextIndex]
     if (nextPlayer.type === 'bot') {
       setTimeout(() => {
@@ -112,7 +130,7 @@ export const useGameStore = create((set, get) => ({
         get().endTurn()
       }, 600)
     }
-  },
+  },  
 
   playBotTurn: (botId) => {
     const { map } = get()

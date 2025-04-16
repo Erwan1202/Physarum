@@ -39,6 +39,14 @@ function App() {
           >
             Fin de tour
           </button>
+          <div className="mt-6 text-center">
+  <p className="text-sm">
+    <span className="inline-block w-4 h-4 bg-green-500 rounded-sm mr-2"></span> Joueur
+    <span className="inline-block w-4 h-4 bg-red-500 rounded-sm ml-4 mr-2"></span> Bot
+    <span className="inline-block w-4 h-4 bg-gray-700 rounded-sm ml-4 mr-2 border"></span> Vide
+  </p>
+</div>
+
         </div>
       )}
     </div>
