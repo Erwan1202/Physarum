@@ -10,7 +10,6 @@ function App() {
     currentPlayerIndex,
     players,
     endTurn,
-    resetGame,
     winner,
     log,
     gameover,
@@ -26,6 +25,7 @@ function App() {
   const [selectedCoords, setSelectedCoords] = useState(null)
 
   const handleCellClick = (x, y) => {
+    if (gameover) return
     if (currentPlayer.type === "human") {
       setSelectedCoords({ x, y })
     }
@@ -122,7 +122,7 @@ function App() {
             </div>
           )}
 
-          {currentPlayer.type === 'human' && (
+          {currentPlayer.type === 'human' && !gameover && (
             <div className="text-yellow-300 text-center font-semibold animate-pulse">
               ✋ À vous de jouer ! Cliquez sur une case pour interagir.
             </div>
@@ -134,7 +134,7 @@ function App() {
             </div>
           )}
 
-          {gameover && (
+          {gameover && !winner && (
             <div className="text-center mt-6 text-2xl font-bold text-red-400 animate-bounce">
               🚫 La partie est terminée !
             </div>
@@ -143,12 +143,13 @@ function App() {
           <div className="flex gap-4 mt-2">
             <button
               onClick={endTurn}
+              disabled={gameover}
               className="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700 transition"
             >
               Fin de tour
             </button>
             <button
-              onClick={resetGame}
+              onClick={() => window.location.reload()}
               className="bg-blue-600 px-4 py-2 rounded text-white font-semibold hover:bg-blue-700 transition"
             >
               Nouvelle Partie
