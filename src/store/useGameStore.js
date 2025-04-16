@@ -50,9 +50,12 @@ export const useGameStore = create((set, get) => ({
   Victory: false,
   lastConqueredCell: null,
   log: [],
+  logFilter: 'all',
+
+  setLogFilter: (filter) => set({ logFilter: filter }),
 
   spreadTo: (x, y) => {
-    const { map, energy, players, currentPlayerIndex, log } = get()
+    const { map, energy, players, currentPlayerIndex } = get()
     const playerId = players[currentPlayerIndex].id
 
     const addLog = (message) => set({ log: [...get().log, message] })
@@ -272,5 +275,6 @@ export const useGameStore = create((set, get) => ({
     Victory: false,
     lastConqueredCell: null,
     log: [],
+    logFilter: 'all'
   })
 }))
