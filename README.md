@@ -1,12 +1,32 @@
-# React + Vite
+Battle Grid: Physarum - Guide de Déploiement
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+🚀 Déploiement sur Vercel
+--------------------------
+1. Push du projet sur GitHub :
+   - git init
+   - git add .
+   - git commit -m "Déploiement version prod"
+   - git remote add origin https://github.com/<utilisateur>/<repo>.git
+   - git push -u origin main
 
-Currently, two official plugins are available:
+2. Aller sur https://vercel.com
+   - Se connecter avec GitHub
+   - Cliquer sur "New Project"
+   - Sélectionner le repo
+   - Laisser les paramètres par défaut (Vite)
+   - Cliquer sur "Deploy"
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+🛠️ Commandes utiles
+---------------------
+- Lancer le dev local : `npm run dev`
+- Build de production : `npm run build`
+- Prévisualisation du build : `npm run preview`
 
-## Expanding the ESLint configuration
+🧠 Conseils supplémentaires
+---------------------------
+- Modifier `vite.config.js` si besoin d’un sous-répertoire
+- Ajouter un `favicon.ico` dans `public/`
+- Ajouter une page 404 personnalisée (fichier `404.html`)
+- Ajouter un fichier `README.md` dans le repo GitHub
 
-If you are developing a production application, we recommend using TypeScript and enable type-aware lint rules. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+🌐 Résultat attendu : https://physarum-five.vercel.app/
