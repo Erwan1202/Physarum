@@ -12,9 +12,7 @@ function App() {
     resetGame,
     winner,
     log,
-    playerName,
-    difficulty,
-    botCount,
+
   } = useGameStore()
 
   const currentPlayer = players[currentPlayerIndex]
