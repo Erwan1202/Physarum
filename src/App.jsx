@@ -1,5 +1,6 @@
 import Grid from "./components/Grid"
 import { useGameStore } from "./store/useGameStore"
+import { useEffect, useRef, useState } from "react"
 
 function App() {
   const {
@@ -14,6 +15,9 @@ function App() {
   } = useGameStore()
 
   const currentPlayer = players[currentPlayerIndex]
+  const [filter, setFilter] = useState("all")
+  const logEndRef = useRef(null)
+  const [darkMode, setDarkMode] = useState(true)
 
   const handleCellClick = (x, y) => {
     if (currentPlayer.type === "human") {
@@ -34,12 +38,28 @@ function App() {
     }[id] || "text-white"
   }
 
+  useEffect(() => {
+    logEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }, [log])
+
+  const filteredLog = filter === "all"
+    ? log
+    : log.filter(entry => entry.toLowerCase().includes(filter.toLowerCase()))
+
   return (
-    <div className="min-h-screen bg-[#0a0f1c] text-white flex flex-col lg:flex-row">
-      
+    <div className={`min-h-screen ${darkMode ? "bg-[#0a0f1c] text-white" : "bg-white text-black"} flex flex-col lg:flex-row`}>
+
       {/* Colonne gauche = Jeu */}
       <div className="flex flex-col gap-4 p-4 w-full lg:w-3/4">
-        <h1 className="text-4xl font-bold">Battle Grid: Physarum</h1>
+        <div className="flex justify-between items-center">
+          <h1 className="text-4xl font-bold">Battle Grid: Physarum</h1>
+          <button
+            onClick={() => setDarkMode(!darkMode)}
+            className="border px-2 py-1 rounded text-sm"
+          >
+            {darkMode ? "☀️ Mode Clair" : "🌙 Mode Sombre"}
+          </button>
+        </div>
 
         <div className="bg-[#111827] p-4 rounded shadow text-sm">
           <h2 className="text-xl font-semibold mb-2">Joueurs</h2>
@@ -52,11 +72,16 @@ function App() {
           </div>
         </div>
 
+        {currentPlayer.type === 'human' && (
+          <div className="text-yellow-300 text-center font-semibold animate-pulse">
+            ✋ À vous de jouer ! Cliquez sur une case adjacente.
+          </div>
+        )}
+
         <Grid map={map} onCellClick={handleCellClick} />
 
-        {/* Légende et actions */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-4">
-          <div className="flex flex-wrap gap-4 text-sm text-white">
+          <div className="flex flex-wrap gap-4 text-sm">
             <span className="flex items-center gap-1">
               <span className="w-4 h-4 bg-green-500 rounded-sm" /> Joueur
             </span>
@@ -100,14 +125,28 @@ function App() {
       {/* Colonne droite = Historique */}
       <div className="w-full lg:w-1/4 max-h-screen overflow-y-auto bg-[#111827] p-4">
         <h2 className="text-xl font-bold mb-3">📜 Historique</h2>
+
+        <div className="flex gap-2 mb-2 text-xs">
+          {['all', 'player', 'bot1', 'bot2', 'bot3'].map(p => (
+            <button
+              key={p}
+              onClick={() => setFilter(p)}
+              className={`px-2 py-1 rounded border ${filter === p ? 'bg-blue-500 text-white' : 'bg-transparent text-gray-300 hover:bg-gray-700'}`}
+            >
+              {p === 'all' ? 'Tous' : p}
+            </button>
+          ))}
+        </div>
+
         <div className="flex flex-col gap-1 text-sm">
-          {log.length === 0 ? (
+          {filteredLog.length === 0 ? (
             <p className="text-gray-500 italic">Aucun événement pour l’instant.</p>
           ) : (
-            log.slice().reverse().map((entry, i) => (
-              <div key={i} className="text-gray-300">{entry}</div>
+            filteredLog.slice().reverse().map((entry, i) => (
+              <div key={i} className="text-gray-300 whitespace-pre-wrap">{entry}</div>
             ))
           )}
+          <div ref={logEndRef} />
         </div>
       </div>
     </div>

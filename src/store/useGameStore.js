@@ -4,9 +4,9 @@ const GRID_SIZE = 10
 
 const players = [
   { id: 'player', type: 'human', color: 'green' },
-  { id: 'bot1', type: 'bot', strategy: 'random', color: 'red' },
-  { id: 'bot2', type: 'bot', strategy: 'aggressive', color: 'purple' },
-  { id: 'bot3', type: 'bot', strategy: 'defensive', color: 'blue' },
+  { id: 'bot1', type: 'bot', strategy: 'adaptive', color: 'red' },
+  { id: 'bot2', type: 'bot', strategy: 'adaptive', color: 'purple' },
+  { id: 'bot3', type: 'bot', strategy: 'adaptive', color: 'blue' },
 ]
 
 const createInitialMap = (players) => {
@@ -197,12 +197,10 @@ export const useGameStore = create((set, get) => ({
   },
 
   playBotTurn: (botId) => {
-    const { map, players } = get()
-    const bot = players.find(p => p.id === botId)
-    const strategy = bot.strategy || 'random'
+    const { map } = get()
     const GRID_SIZE = map.length
-    const owned = []
 
+    const owned = []
     for (let y = 0; y < GRID_SIZE; y++) {
       for (let x = 0; x < GRID_SIZE; x++) {
         if (map[y][x].owner === botId) owned.push([x, y])
@@ -213,51 +211,35 @@ export const useGameStore = create((set, get) => ({
       [x - 1, y], [x + 1, y], [x, y - 1], [x, y + 1],
     ].filter(([i, j]) => i >= 0 && j >= 0 && i < GRID_SIZE && j < GRID_SIZE)
 
-    let target = null
+    const scoreCell = ([x, y], botId) => {
+      const cell = map[y][x]
+      if (!cell.owner) return 1 // priorité base
+      if (cell.owner !== botId) return 2 // conquête
+      return 0
+    }
 
-    if (strategy === 'random') {
-      for (let [x, y] of owned) {
-        const adjacent = getAdjacentCells([x, y]).filter(([i, j]) => map[j][i].owner !== botId)
-        if (adjacent.length > 0) {
-          target = adjacent[Math.floor(Math.random() * adjacent.length)]
-          break
+    let bestTarget = null
+    let bestScore = -Infinity
+
+    for (let [x, y] of owned) {
+      const adjacent = getAdjacentCells([x, y])
+      for (let [i, j] of adjacent) {
+        const score = scoreCell([i, j], botId)
+        if (score > bestScore) {
+          bestScore = score
+          bestTarget = [i, j]
         }
       }
     }
 
-    if (strategy === 'aggressive') {
-      for (let [x, y] of owned) {
-        const adjacent = getAdjacentCells([x, y])
-        const enemies = adjacent.filter(([i, j]) => {
-          const cell = map[j][i]
-          return cell.owner && cell.owner !== botId
-        })
-        if (enemies.length > 0) {
-          target = enemies[0]
-          break
-        }
-      }
-    }
-
-    if (strategy === 'defensive') {
-      for (let [x, y] of owned) {
-        const adjacent = getAdjacentCells([x, y])
-        const neutrals = adjacent.filter(([i, j]) => !map[j][i].owner)
-        if (neutrals.length > 0) {
-          target = neutrals[0]
-          break
-        }
-      }
-    }
-
-    if (target) {
-      const [tx, ty] = target
-      const msg = `🤖 ${botId} (${strategy}) tente de se propager en (${tx},${ty})`
+    if (bestTarget) {
+      const [tx, ty] = bestTarget
+      const msg = `🤖 ${botId} (adaptive) choisit intelligemment de se propager en (${tx},${ty})`
       console.log(msg)
       set((state) => ({ log: [...state.log, msg] }))
       get().spreadTo(tx, ty)
     } else {
-      const msg = `🤖 ${botId} (${strategy}) ne trouve aucune case utile.`
+      const msg = `🤖 ${botId} (adaptive) ne trouve aucune case utile.`
       console.log(msg)
       set((state) => ({ log: [...state.log, msg] }))
     }
@@ -275,6 +257,6 @@ export const useGameStore = create((set, get) => ({
     Victory: false,
     lastConqueredCell: null,
     log: [],
-    logFilter: 'all'
+    logFilter: 'all',
   })
 }))
