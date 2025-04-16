@@ -229,14 +229,14 @@ export const useGameStore = create((set, get) => ({
   },
 
   endTurn: () => {
-    const state = get()
-    const { currentPlayerIndex, players, map } = state
-    const currentPlayerId = players[currentPlayerIndex].id
+    get().baseBonus()
   
-    // Vérifie combien de territoires possède le joueur actuel
+    const { currentPlayerIndex, players } = get()
+    const currentPlayerId = players[currentPlayerIndex].id
+    const map = get().map
+  
     const ownedCells = map.flat().filter(cell => cell.owner === currentPlayerId).length
   
-    // Si le joueur n’a plus de territoire
     if (ownedCells === 0) {
       const msg = `💀 ${currentPlayerId} a été éliminé !`
       console.log(msg)
@@ -245,7 +245,6 @@ export const useGameStore = create((set, get) => ({
   
     const nextIndex = (currentPlayerIndex + 1) % players.length
   
-    // Calcul des gains d’énergie/biomasse
     const energyGain = Math.floor(ownedCells / 5)
     const biomassGain = Math.floor(ownedCells / 10)
   
@@ -285,15 +284,14 @@ export const useGameStore = create((set, get) => ({
       const winnerId = alivePlayers[0]
       console.log(`🏆 ${winnerId} a gagné la partie !`)
       set({ winner: winnerId, gameOver: true })
-      return
     }
   
     if (!alivePlayers.includes('player')) {
-        console.log(`💀 Le joueur a été éliminé !`)
-        get().triggerGameOver('bots')
-      } 
-      
+      console.log(`💀 Le joueur a été éliminé !`)
+      get().triggerGameOver('bots')
+    }
   },
+    
   
 
   playBotTurn: (botId) => {
