@@ -7,9 +7,12 @@ function GameSetup({ onStart }) {
   const [difficulty, setDifficulty] = useState("normal")
   const [botCount, setBotCount] = useState(3)
 
+  const setCustomPlayers = useGameStore(state => state.setCustomPlayers)
+
   const handleStart = () => {
-    useGameStore.getState().setCustomPlayers({ playerName, difficulty, botCount })
-    onStart() // ⬅️ active l’écran de jeu
+    
+    setCustomPlayers({ playerName, difficulty, botCount })    
+    onStart() 
   }
 
   return (

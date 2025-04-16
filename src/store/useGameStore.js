@@ -2,7 +2,7 @@ import { create } from 'zustand'
 
 const GRID_SIZE = 10
 
-const players = [
+const defaultPlayers = [
   { id: 'player', type: 'human', color: 'green' },
   { id: 'bot1', type: 'bot', strategy: 'adaptive', color: 'red' },
   { id: 'bot2', type: 'bot', strategy: 'adaptive', color: 'purple' },
@@ -38,20 +38,48 @@ const createInitialMap = (players) => {
 }
 
 export const useGameStore = create((set, get) => ({
-  map: createInitialMap(players),
-  players,
-  energy: 5,
-  biomass: 1,
-  turn: 1,
-  currentPlayerIndex: 0,
-  winner: null,
-  gameOver: false,
-  Victory: false,
-  lastConqueredCell: null,
-  log: [],
-  logFilter: 'all',
+    map: createInitialMap(defaultPlayers),
+    players: defaultPlayers,
+    energy: 5,
+    biomass: 1,
+    turn: 1,
+    currentPlayerIndex: 0,
+    winner: null,
+    gameOver: false,
+    Victory: false,
+    lastConqueredCell: null,
+    log: [],
+    logFilter: 'all',
+  
 
   setLogFilter: (filter) => set({ logFilter: filter }),
+
+setCustomPlayers: ({ playerName = 'Joueur', botCount= 3 }) => {
+    const bots = [
+        { id: 'bot1', type: 'bot', strategy: 'adaptive', color: 'red', name: 'Bot 1' },
+        { id: 'bot2', type: 'bot', strategy: 'adaptive', color: 'purple', name: 'Bot 2' },
+        { id: 'bot3', type: 'bot', strategy: 'adaptive', color: 'blue', name: 'Bot 3' },
+
+    ].slice(0, botCount)
+    const players = [
+        { id: 'player', type: 'human', color: 'green', name: playerName },
+        ...bots,
+    ]
+
+    set({
+        players,
+        map: createInitialMap(get().players),
+        energy: 5,
+        biomass: 1,
+        turn: 1,
+        currentPlayerIndex: 0,
+        winner: null,
+        gameOver: false,
+        Victory: false,
+        lastConqueredCell: null,
+        log: [],
+      })
+    },  
 
   spreadTo: (x, y) => {
     const { map, energy, players, currentPlayerIndex } = get()
@@ -251,8 +279,8 @@ export const useGameStore = create((set, get) => ({
   },
 
   resetGame: () => set({
-    map: createInitialMap(players),
-    players,
+    map: createInitialMap(get().players),
+    players: get().players,
     energy: 5,
     biomass: 1,
     currentPlayerIndex: 0,
