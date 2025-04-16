@@ -2,11 +2,11 @@ import { create } from 'zustand'
 
 const GRID_SIZE = 10
 
-const players = [
+const defaultPlayers = [
   { id: 'player', type: 'human', color: 'green' },
-  { id: 'bot1', type: 'bot', strategy: 'random', color: 'red' },
-  { id: 'bot2', type: 'bot', strategy: 'aggressive', color: 'purple' },
-  { id: 'bot3', type: 'bot', strategy: 'defensive', color: 'blue' },
+  { id: 'bot1', type: 'bot', strategy: 'adaptive', color: 'red' },
+  { id: 'bot2', type: 'bot', strategy: 'adaptive', color: 'purple' },
+  { id: 'bot3', type: 'bot', strategy: 'adaptive', color: 'blue' },
 ]
 
 const createInitialMap = (players) => {
@@ -18,7 +18,6 @@ const createInitialMap = (players) => {
   )
 
   const used = new Set()
-
   const getRandomEmptyCoord = () => {
     let x, y
     do {
@@ -39,23 +38,58 @@ const createInitialMap = (players) => {
 }
 
 export const useGameStore = create((set, get) => ({
-  map: createInitialMap(players),
-  players,
-  energy: 5,
-  biomass: 1,
-  turn: 1,
-  currentPlayerIndex: 0,
-  winner: null,
-  gameOver: false,
-  Victory: false,
-  lastConqueredCell: null,
+    map: createInitialMap(defaultPlayers),
+    players: defaultPlayers,
+    energy: 5,
+    biomass: 1,
+    turn: 1,
+    currentPlayerIndex: 0,
+    winner: null,
+    gameOver: false,
+    Victory: false,
+    lastConqueredCell: null,
+    log: [],
+    logFilter: 'all',
+  
+
+  setLogFilter: (filter) => set({ logFilter: filter }),
+
+setCustomPlayers: ({ playerName = 'Joueur', botCount= 3 }) => {
+    const bots = [
+        { id: 'bot1', type: 'bot', strategy: 'adaptive', color: 'red', name: 'Bot 1' },
+        { id: 'bot2', type: 'bot', strategy: 'adaptive', color: 'purple', name: 'Bot 2' },
+        { id: 'bot3', type: 'bot', strategy: 'adaptive', color: 'blue', name: 'Bot 3' },
+
+    ].slice(0, botCount)
+    const players = [
+        { id: 'player', type: 'human', color: 'green', name: playerName },
+        ...bots,
+    ]
+
+    set({
+        players,
+        map: createInitialMap(get().players),
+        energy: 5,
+        biomass: 1,
+        turn: 1,
+        currentPlayerIndex: 0,
+        winner: null,
+        gameOver: false,
+        Victory: false,
+        lastConqueredCell: null,
+        log: [],
+      })
+    },  
 
   spreadTo: (x, y) => {
     const { map, energy, players, currentPlayerIndex } = get()
     const playerId = players[currentPlayerIndex].id
+    const addLog = (message) => set({ log: [...get().log, message] })
 
     if (energy < 1) {
-      console.log(`[${playerId}] ❌ Pas assez d'énergie pour se propager.`)
+      const msg = `[${playerId}] ❌ Pas assez d'énergie pour se propager.`
+      console.log(msg)
+      addLog(msg)
       return
     }
 
@@ -66,7 +100,9 @@ export const useGameStore = create((set, get) => ({
     const isAdjacent = getAdjacentCells(x, y).some(([i, j]) => map[j][i]?.owner === playerId)
 
     if (!isAdjacent) {
-      console.log(`[${playerId}] ❌ Impossible de se propager ici, pas adjacent.`)
+      const msg = `[${playerId}] ❌ Impossible de se propager ici, pas adjacent.`
+      console.log(msg)
+      addLog(msg)
       return
     }
 
@@ -79,36 +115,44 @@ export const useGameStore = create((set, get) => ({
         cell.owner = playerId
         cell.biomass = 1
         newMap[y][x] = cell
+        const msg = `[${playerId}] ✅ S'est propagé en (${x},${y}) [libre]`
+        console.log(msg)
+        addLog(msg)
         setTimeout(() => set({ lastConqueredCell: null }), 500)
-        console.log(`[${playerId}] ✅ S'est propagé en (${x},${y}) [libre]`)
         return {
           map: newMap,
           energy: state.energy - 1,
           biomass: state.biomass + 1,
-          lastConqueredCell: { x, y }
+          lastConqueredCell: { x, y },
         }
       }
 
       if (cell.owner !== playerId) {
         const conquestChance = Math.random()
         if (energy < 2) {
-          console.log(`[${playerId}] ❌ Pas assez d'énergie pour conquérir.`)
+          const msg = `[${playerId}] ❌ Pas assez d'énergie pour conquérir.`
+          console.log(msg)
+          addLog(msg)
           return {}
         }
         if (conquestChance > 0.5) {
           cell.owner = playerId
           cell.biomass = 1
           newMap[y][x] = cell
+          const msg = `[${playerId}] ⚔️ A conquis la case (${x},${y}) ! [chance: ${conquestChance.toFixed(2)}]`
+          console.log(msg)
+          addLog(msg)
           setTimeout(() => set({ lastConqueredCell: null }), 500)
-          console.log(`[${playerId}] ⚔️ A conquis la case (${x},${y}) ! [chance: ${conquestChance.toFixed(2)}]`)
           return {
             map: newMap,
             energy: state.energy - 2,
             biomass: state.biomass + 2,
-            lastConqueredCell: { x, y }
+            lastConqueredCell: { x, y },
           }
         } else {
-          console.log(`[${playerId}] ❌ A échoué à conquérir (${x},${y}) [chance: ${conquestChance.toFixed(2)}]`)
+          const msg = `[${playerId}] ❌ A échoué à conquérir (${x},${y}) [chance: ${conquestChance.toFixed(2)}]`
+          console.log(msg)
+          addLog(msg)
         }
       }
 
@@ -132,13 +176,14 @@ export const useGameStore = create((set, get) => ({
     const energyGain = Math.floor(ownedCells / 5)
     const biomassGain = Math.floor(ownedCells / 10)
 
-    console.log(`💰 ${currentPlayerId} gagne ${energyGain}⚡ et ${biomassGain}🧬 grâce à ses ${ownedCells} territoires.`)
-
+    const msg = `💰 ${currentPlayerId} gagne ${energyGain}⚡ et ${biomassGain}🧬 grâce à ses ${ownedCells} territoires.`
+    console.log(msg)
     set((state) => ({
       currentPlayerIndex: nextIndex,
       energy: 5 + energyGain,
       biomass: state.biomass + biomassGain,
       turn: state.turn + 1,
+      log: [...state.log, msg],
     }))
 
     const nextPlayer = players[nextIndex]
@@ -151,7 +196,6 @@ export const useGameStore = create((set, get) => ({
     }
 
     const playerTerritories = {}
-
     for (let row of map) {
       for (let cell of row) {
         if (cell.owner) {
@@ -179,11 +223,9 @@ export const useGameStore = create((set, get) => ({
 
   playBotTurn: (botId) => {
     const { map, players } = get()
-    const bot = players.find(p => p.id === botId)
-    const strategy = bot.strategy || 'random'
     const GRID_SIZE = map.length
-    const owned = []
 
+    const owned = []
     for (let y = 0; y < GRID_SIZE; y++) {
       for (let x = 0; x < GRID_SIZE; x++) {
         if (map[y][x].owner === botId) owned.push([x, y])
@@ -194,55 +236,51 @@ export const useGameStore = create((set, get) => ({
       [x - 1, y], [x + 1, y], [x, y - 1], [x, y + 1],
     ].filter(([i, j]) => i >= 0 && j >= 0 && i < GRID_SIZE && j < GRID_SIZE)
 
-    let target = null
+    const countTerritories = (ownerId) =>
+      map.flat().filter(cell => cell.owner === ownerId).length
 
-    if (strategy === 'random') {
-      for (let [x, y] of owned) {
-        const adjacent = getAdjacentCells([x, y]).filter(([i, j]) => map[j][i].owner !== botId)
-        if (adjacent.length > 0) {
-          target = adjacent[Math.floor(Math.random() * adjacent.length)]
-          break
+    const weakestEnemy = players
+      .filter(p => p.id !== botId && p.type === 'bot')
+      .sort((a, b) => countTerritories(a.id) - countTerritories(b.id))[0]?.id
+
+    const scoreCell = ([x, y]) => {
+      const cell = map[y][x]
+      if (!cell.owner) return 2 // priorité neutre
+      if (cell.owner !== botId && cell.owner === weakestEnemy) return 4 // attaquer faible
+      if (cell.owner !== botId) return 3 // conquête normale
+      return 0
+    }
+
+    let bestTarget = null
+    let bestScore = -Infinity
+
+    for (let [x, y] of owned) {
+      const adjacent = getAdjacentCells([x, y])
+      for (let [i, j] of adjacent) {
+        const score = scoreCell([i, j])
+        if (score > bestScore) {
+          bestScore = score
+          bestTarget = [i, j]
         }
       }
     }
 
-    if (strategy === 'aggressive') {
-      for (let [x, y] of owned) {
-        const adjacent = getAdjacentCells([x, y])
-        const enemies = adjacent.filter(([i, j]) => {
-          const cell = map[j][i]
-          return cell.owner && cell.owner !== botId
-        })
-        if (enemies.length > 0) {
-          target = enemies[0]
-          break
-        }
-      }
-    }
-
-    if (strategy === 'defensive') {
-      for (let [x, y] of owned) {
-        const adjacent = getAdjacentCells([x, y])
-        const neutrals = adjacent.filter(([i, j]) => !map[j][i].owner)
-        if (neutrals.length > 0) {
-          target = neutrals[0]
-          break
-        }
-      }
-    }
-
-    if (target) {
-      const [tx, ty] = target
-      console.log(`🤖 ${botId} (${strategy}) tente de se propager en (${tx},${ty})`)
+    if (bestTarget) {
+      const [tx, ty] = bestTarget
+      const msg = `🤖 ${botId} (adaptive++) choisit intelligemment de se propager en (${tx},${ty})`
+      console.log(msg)
+      set((state) => ({ log: [...state.log, msg] }))
       get().spreadTo(tx, ty)
     } else {
-      console.log(`🤖 ${botId} (${strategy}) ne trouve aucune case utile.`)
+      const msg = `🤖 ${botId} (adaptive++) ne trouve aucune case utile.`
+      console.log(msg)
+      set((state) => ({ log: [...state.log, msg] }))
     }
   },
 
   resetGame: () => set({
-    map: createInitialMap(players),
-    players,
+    map: createInitialMap(get().players),
+    players: get().players,
     energy: 5,
     biomass: 1,
     currentPlayerIndex: 0,
@@ -251,5 +289,7 @@ export const useGameStore = create((set, get) => ({
     gameOver: false,
     Victory: false,
     lastConqueredCell: null,
+    log: [],
+    logFilter: 'all',
   })
 }))
