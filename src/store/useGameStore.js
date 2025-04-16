@@ -88,7 +88,7 @@ export const useGameStore = create((set, get) => ({
   },
 
   usePower: (powerName) => {
-    const { players, currentPlayerIndex, map } = get()
+    const { players, currentPlayerIndex} = get()
     const currentPlayer = players[currentPlayerIndex]
     const playerId = currentPlayer.id
     const cooldowns = currentPlayer.cooldowns
@@ -103,43 +103,8 @@ export const useGameStore = create((set, get) => ({
       return
     }
 
-    switch (powerName) {
-      case 'reveal': {
-        const visibleCells = []
-        for (let y = 0; y < GRID_SIZE; y++) {
-          for (let x = 0; x < GRID_SIZE; x++) {
-            if (map[y][x].owner && map[y][x].owner !== playerId) {
-              map[y][x].visibleTo.push(playerId)
-              visibleCells.push(`(${x},${y})`)
-            }
-          }
-        }
-        cooldowns.reveal = 3
-        addLog(`[${playerId}] 🔍 Utilise "Révélation" et aperçoit les cellules : ${visibleCells.join(', ')}`)
-        break
-      }
-      case 'boost': {
-        set((state) => ({ energy: state.energy + 3 }))
-        cooldowns.boost = 2
-        addLog(`[${playerId}] ⚡ Utilise "Boost" et gagne +3 énergie !`)
-        break
-      }
-      case 'scout': {
-        for (let y = 0; y < GRID_SIZE; y++) {
-          for (let x = 0; x < GRID_SIZE; x++) {
-            if (!map[y][x].owner) map[y][x].visibleTo.push(playerId)
-          }
-        }
-        cooldowns.scout = 4
-        addLog(`[${playerId}] 👁️ Utilise "Scout" pour révéler les zones neutres.`)
-        break
-      }
-      default:
-        addLog(`[${playerId}] ❌ Pouvoir inconnu.`)
-        return
-    }
-    set({ map, players })
-  },
+},
+
 
   triggerGameOver: (winnerId) => {
     set({ gameOver: true, winner: winnerId })
@@ -292,7 +257,8 @@ export const useGameStore = create((set, get) => ({
     if (!alivePlayers.includes('player')) {
         console.log(`💀 Le joueur a été éliminé !`)
         get().triggerGameOver('bots')
-      }      
+      } 
+      
   },
   
 

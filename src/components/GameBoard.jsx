@@ -67,14 +67,6 @@ function App() {
             </button>
           </div>
 
-          <Grid map={map} onCellClick={handleCellClick} />
-
-          {currentPlayer.type === 'human' && (
-            <div className="text-yellow-300 text-center font-semibold animate-pulse">
-              ✋ À vous de jouer ! Cliquez sur une case adjacente.
-            </div>
-          )}
-
           <div className="bg-[#111827] p-4 rounded shadow text-sm mt-2">
             <h2 className="text-xl font-semibold mb-2">Joueurs</h2>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -86,46 +78,25 @@ function App() {
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-4 text-sm mt-2">
-            <span className="flex items-center gap-1">
-              <span className="w-4 h-4 bg-green-500 rounded-sm" /> Joueur
-            </span>
-            <span className="flex items-center gap-1">
-              <span className="w-4 h-4 bg-red-500 rounded-sm" /> Bot 1
-            </span>
-            <span className="flex items-center gap-1">
-              <span className="w-4 h-4 bg-purple-500 rounded-sm" /> Bot 2
-            </span>
-            <span className="flex items-center gap-1">
-              <span className="w-4 h-4 bg-blue-500 rounded-sm" /> Bot 3
-            </span>
-            <span className="flex items-center gap-1">
-              <span className="w-4 h-4 bg-gray-500 border border-white rounded-sm" /> Vide
-            </span>
-          </div>
+          
 
           <div className="bg-black/50 p-4 rounded text-sm font-mono mb-4">
-            <p className="mb-1 text-green-400 font-bold">🎮 {currentPlayer.name} ({currentPlayer.id})</p>
-            <p>⚡ Énergie : <span className="text-yellow-300">{energy}</span></p>
-            <p>🧬 Biomasse : <span className="text-pink-300">{biomass}</span></p>
-            <p>⏳ Tour : <span className="text-gray-300">{turn}</span></p>
+            <p className="mb-1 text-green-400 font-bold">🎮 {currentPlayer.name}</p>
+            <p>⚡ Énergie : <span className="text-yellow-300">{energy}</span> 
+             🧬 Biomasse : <span className="text-pink-300">{biomass}</span>
+             ⏳ Tour : <span className="text-gray-300">{turn}</span></p>
         </div>
 
+          <Grid map={map} onCellClick={handleCellClick} />
 
-          <div className="flex gap-4 mt-2">
-            <button
-              onClick={endTurn}
-              className="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700 transition"
-            >
-              Fin de tour
-            </button>
-            <button
-              onClick={resetGame}
-              className="bg-blue-600 px-4 py-2 rounded text-white font-semibold hover:bg-blue-700 transition"
-            >
-              Nouvelle Partie
-            </button>
-          </div>
+          {currentPlayer.type === 'human' && (
+            <div className="text-yellow-300 text-center font-semibold animate-pulse">
+              ✋ À vous de jouer ! Cliquez sur une case adjacente.
+            </div>
+          )}
+
+
+          
 
           {winner && (
             <div className="text-center mt-6 text-2xl font-bold text-yellow-400 animate-bounce">
@@ -140,6 +111,21 @@ function App() {
           )
 
           }
+
+<div className="flex gap-4 mt-2">
+            <button
+              onClick={endTurn}
+              className="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700 transition"
+            >
+              Fin de tour
+            </button>
+            <button
+              onClick={resetGame}
+              className="bg-blue-600 px-4 py-2 rounded text-white font-semibold hover:bg-blue-700 transition"
+            >
+              Nouvelle Partie
+            </button>
+          </div>
         </div>
 
         {/* Colonne droite = Historique */}
