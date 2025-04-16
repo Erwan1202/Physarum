@@ -106,6 +106,39 @@ export const useGameStore = create((set, get) => ({
     }))
   },
 
+  baseBonus: () => {
+    const { map, players, currentPlayerIndex } = get()
+    const playerId = players[currentPlayerIndex].id
+    let baseCount = 0
+    for (let row of map) {
+      for (let cell of row) {
+        if (cell.owner === playerId && cell.hasBase) baseCount++
+      }
+    }
+    set((state) => ({
+      energy: state.energy + baseCount,
+      log: [...state.log, `[${playerId}] 🏕️ ${baseCount} base(s) fournissent +${baseCount}⚡`]
+    }))
+  },
+
+  destroyBaseAt: (x, y) => {
+    const { map, players, currentPlayerIndex } = get()
+    const playerId = players[currentPlayerIndex].id
+    const cell = map[y][x]
+
+    if (!cell.hasBase) return
+    if (cell.owner !== playerId) return
+
+    const newMap = [...map]
+    newMap[y] = [...newMap[y]]
+    newMap[y][x] = { ...cell, hasBase: false }
+
+    set((state) => ({
+      map: newMap,
+      log: [...state.log, `[${playerId}] 💥 A détruit sa base en (${x},${y})`]
+    }))
+  },
+
 
   triggerGameOver: (winnerId) => {
     set({ gameOver: true, winner: winnerId })
