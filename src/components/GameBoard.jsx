@@ -97,7 +97,7 @@ function App() {
              ⏳ Tour : <span className="text-gray-300">{turn}</span></p>
           </div>
 
-          <Grid map={map} onCellClick={handleCellClick} />
+          <Grid map={map} onCellClick={handleCellClick} showBases />
 
           {selectedCoords && (
             <div className="bg-gray-800 p-3 rounded mt-2 flex gap-4 justify-center">
@@ -124,7 +124,7 @@ function App() {
 
           {currentPlayer.type === 'human' && (
             <div className="text-yellow-300 text-center font-semibold animate-pulse">
-              ✋ À vous de jouer ! Cliquez sur une case adjacente.
+              ✋ À vous de jouer ! Cliquez sur une case pour interagir.
             </div>
           )}
 
