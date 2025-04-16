@@ -24,7 +24,7 @@ const Grid = ({ map, onCellClick }) => {
     <div className="flex flex-col items-center gap-4">
       <div
         className="grid gap-1"
-        style={{ gridTemplateColumns: `repeat(${map.length}, 2rem)` }}
+        style={{gridTemplateColumns: `repeat(${map.length}, minmax(1.5rem, 1fr))` }}
       >
         {map.map((row, y) =>
           row.map((cell, x) => {
