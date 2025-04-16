@@ -105,18 +105,22 @@ export const useGameStore = create((set, get) => ({
     const nextIndex = (currentPlayerIndex + 1) % players.length
     const currentPlayerId = players[currentPlayerIndex].id
 
-    const map = get().map
-    let ownedCells = 0
-    for (let row of map) {
-      for (let cell of row) {
-        if (cell.owner === currentPlayerId) ownedCells++
+    // Compter les territoires
+  const map = get().map
+  let ownedCells = 0
+  for (let row of map) {
+    for (let cell of row) {
+      if (cell.owner === currentPlayerId) {
+        ownedCells++
       }
     }
+  }
 
-    const energyGain = Math.floor(ownedCells / 5)
-    const biomassGain = Math.floor(ownedCells / 10)
+  // Bonus par case possédée
+  const energyGain = Math.floor(ownedCells / 5)
+  const biomassGain = Math.floor(ownedCells / 10)
 
-    console.log(`💰 ${currentPlayerId} gagne ${energyGain}⚡ et ${biomassGain}🧬 grâce à ses ${ownedCells} territoires.`)
+  console.log(`💰 ${currentPlayerId} gagne ${energyGain}⚡ et ${biomassGain}🧬 grâce à ses ${ownedCells} territoires.`)
 
     set((state) => ({
       currentPlayerIndex: nextIndex,
