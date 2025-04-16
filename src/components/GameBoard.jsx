@@ -69,7 +69,9 @@ function App() {
   }
 
   useEffect(() => {
-    logEndRef.current?.scrollIntoView({ behavior: "smooth" })
+    if (logEndRef.current) {
+      logEndRef.current.scrollIntoView({ behavior: "smooth", block: "end" })
+    }
   }, [log])
 
   const filteredLog = filter === "all"
@@ -77,7 +79,7 @@ function App() {
     : log.filter(entry => entry.toLowerCase().includes(filter.toLowerCase()))
 
   return (
-    <div className={`min-h-screen ${darkMode ? "bg-[#0a0f1c] text-white" : "bg-white text-black"} p-4`}>
+    <div className={`min-h-screen ${darkMode ? "bg-[#0a0f1c] text-white" : "bg-white text-black"} p-4 overflow-x-hidden`}>
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_600px] gap-6 max-w-[1920px] mx-auto">
         {/* Colonne gauche = Jeu */}
         <div className="flex flex-col gap-4">
@@ -172,7 +174,7 @@ function App() {
         </div>
 
         {/* Colonne droite = Historique */}
-        <div className="w-full flex flex-col bg-[#111827] p-4 rounded max-h-[calc(100vh-100px)]">
+        <div className="w-full flex flex-col bg-[#111827] p-4 rounded max-h-[calc(100vh-100px)] overflow-hidden">
           <div className="sticky top-0 z-10 bg-[#111827] pb-2">
             <h2 className="text-xl font-bold mb-3">📜 Historique</h2>
             <div className="flex gap-2 mb-2 text-xs flex-wrap">

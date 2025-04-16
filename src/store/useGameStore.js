@@ -228,7 +228,8 @@ export const useGameStore = create((set, get) => ({
             actionsLeft: state.actionsLeft - 1,
           }
         } else {
-          addLog(`[${playerId}] ❌ A échoué à conquérir (${x},${y}) [${mode}]`)
+          state.energy -= cost
+          addLog(`[${playerId}] ❌ A échoué à conquérir (${x},${y}) [${mode}, échec]`)
         }
       }
       return {}
