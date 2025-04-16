@@ -45,6 +45,10 @@ export const useGameStore = create((set, get) => ({
   biomass: 1,
   turn: 1,
   currentPlayerIndex: 0,
+  winner: null,
+  gameOver: false,
+  Victory: false,
+  lastConqueredCell: null,
 
   spreadTo: (x, y) => {
     const { map, energy, players, currentPlayerIndex } = get()
@@ -75,11 +79,13 @@ export const useGameStore = create((set, get) => ({
         cell.owner = playerId
         cell.biomass = 1
         newMap[y][x] = cell
+        setTimeout(() => set({ lastConqueredCell: null }), 500)
         console.log(`[${playerId}] ✅ S'est propagé en (${x},${y}) [libre]`)
         return {
           map: newMap,
           energy: state.energy - 1,
           biomass: state.biomass + 1,
+          lastConqueredCell: { x, y }
         }
       }
 
@@ -93,11 +99,13 @@ export const useGameStore = create((set, get) => ({
           cell.owner = playerId
           cell.biomass = 1
           newMap[y][x] = cell
+          setTimeout(() => set({ lastConqueredCell: null }), 500)
           console.log(`[${playerId}] ⚔️ A conquis la case (${x},${y}) ! [chance: ${conquestChance.toFixed(2)}]`)
           return {
             map: newMap,
             energy: state.energy - 2,
             biomass: state.biomass + 2,
+            lastConqueredCell: { x, y }
           }
         } else {
           console.log(`[${playerId}] ❌ A échoué à conquérir (${x},${y}) [chance: ${conquestChance.toFixed(2)}]`)
@@ -140,6 +148,32 @@ export const useGameStore = create((set, get) => ({
         get().playBotTurn(nextPlayer.id)
         get().endTurn()
       }, 600)
+    }
+
+    const playerTerritories = {}
+
+    for (let row of map) {
+      for (let cell of row) {
+        if (cell.owner) {
+          playerTerritories[cell.owner] = (playerTerritories[cell.owner] || 0) + 1
+        }
+      }
+    }
+
+    const alivePlayers = Object.keys(playerTerritories)
+
+    if (alivePlayers.length === 1) {
+      const winnerId = alivePlayers[0]
+      console.log(`🏆 ${winnerId} a gagné la partie !`)
+      set({ winner: winnerId, gameOver: true })
+    }
+    if (!alivePlayers.includes('player')) {
+      console.log(`💀 Le joueur a été éliminé !`)
+      set({ gameOver: true })
+    }
+    if (!alivePlayers.includes('bot1') && !alivePlayers.includes('bot2') && !alivePlayers.includes('bot3')) {
+      console.log(`💀 Tous les bots ont été éliminés !`)
+      set({ Victory: true, winner: 'player', gameOver: true })
     }
   },
 
@@ -213,5 +247,9 @@ export const useGameStore = create((set, get) => ({
     biomass: 1,
     currentPlayerIndex: 0,
     turn: 1,
+    winner: null,
+    gameOver: false,
+    Victory: false,
+    lastConqueredCell: null,
   })
 }))
