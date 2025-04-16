@@ -25,6 +25,8 @@ function App() {
   const [darkMode, setDarkMode] = useState(true)
   const [selectedCoords, setSelectedCoords] = useState(null)
   const lastClick = useRef(null)
+  const [showGuide, setShowGuide] = useState(false)
+
 
   const handleCellClick = (x, y) => {
     if (gameover || currentPlayer.type !== "human") return
@@ -73,9 +75,10 @@ function App() {
 
   useEffect(() => {
     if (logEndRef.current) {
-      logEndRef.current.scrollIntoView({ behavior: "smooth", block: "end" })
+      logEndRef.current.scrollIntoView({ behavior: "smooth", block: "nearest" })
     }
   }, [log])
+  
 
   const filteredLog = filter === "all"
     ? log
@@ -90,6 +93,13 @@ function App() {
             <div>
               <h1 className="text-4xl font-bold">Battle Grid: Physarum</h1>
             </div>
+            <button
+  onClick={() => setShowGuide(true)}
+  className="border px-2 py-1 rounded text-sm ml-2"
+>
+  📖 Guide
+</button>
+
             <button
               onClick={() => setDarkMode(!darkMode)}
               className="border px-2 py-1 rounded text-sm"
@@ -205,6 +215,33 @@ function App() {
           </div>
         </div>
       </div>
+      {showGuide && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
+    <div className="bg-white text-black dark:bg-gray-900 dark:text-white max-w-xl w-full p-6 rounded shadow-xl overflow-y-auto max-h-[80vh] relative">
+      <button
+        onClick={() => setShowGuide(false)}
+        className="absolute top-2 right-2 text-gray-400 hover:text-white text-xl font-bold"
+      >
+        ✖
+      </button>
+      <h2 className="text-2xl font-bold mb-4">📖 Guide de jeu</h2>
+      <div className="text-sm space-y-2 leading-relaxed">
+        <p><strong>🎯 Objectif :</strong> Conquérir toute la carte ou éliminer tous les bots.</p>
+        <p><strong>🕹️ Contrôles :</strong></p>
+        <ul className="list-disc list-inside ml-4">
+          <li><strong>Clic gauche :</strong> propagation / attaque</li>
+          <li><strong>Double clic :</strong> construire une base</li>
+          <li><strong>Menu :</strong> détruire la base si sélectionnée</li>
+        </ul>
+        <p><strong>🔄 Fin de tour :</strong> Bouton "Fin de tour" pour passer à l’adversaire.</p>
+        <p><strong>⚡ Ressources :</strong> énergie (propagation, construction), biomasse (score)</p>
+        <p><strong>🏁 Victoire :</strong> être le dernier joueur encore en vie</p>
+        <p><strong>💡 Astuce :</strong> Plus tu construis de bases, plus tu gagnes d’énergie chaque tour !</p>
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   )
 }
