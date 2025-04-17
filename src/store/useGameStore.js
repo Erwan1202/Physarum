@@ -73,7 +73,7 @@ export const useGameStore = create((set, get) => ({
     ].slice(0, botCount)
 
     const players = [
-      { id: 'player', type: 'human', color: 'green', name: playerName, powers: { reveal: true }, cooldowns: { reveal: 0 } },
+      { id: 'player', type: 'human', color: 'green', name: playerName },
       ...bots,
     ]
 
@@ -250,7 +250,7 @@ export const useGameStore = create((set, get) => ({
     const { map, players, currentPlayerIndex } = get()
     const currentPlayerId = players[currentPlayerIndex].id
   
-    // 🔁 On re-récupère la map après baseBonus
+    // On re-récupère la map après baseBonus
     const freshMap = get().map
   
     const ownedCells = freshMap.flat().filter(cell => cell.owner === currentPlayerId).length

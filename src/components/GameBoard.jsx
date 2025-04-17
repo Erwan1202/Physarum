@@ -70,7 +70,7 @@ function App() {
         bot4: "text-yellow-400",
         bot5: "text-orange-400",
         bot6: "text-pink-400",
-    }[id] || "text-white"
+    }[id] || "text-transparent"
   }
 
   useEffect(() => {
@@ -108,7 +108,7 @@ function App() {
             </button>
           </div>
 
-          <div className="bg-[#111827] p-4 rounded shadow text-sm mt-2">
+          <div className= {` p-4 rounded shadow text-sm mt-2${darkMode ? "bg-[#111827] text-white" : "bg-white text-black"}`}>
             <h2 className="text-xl font-semibold mb-2">Joueurs</h2>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {players.map(p => (
@@ -119,11 +119,11 @@ function App() {
             </div>
           </div>
 
-          <div className="bg-black/50 p-4 rounded text-sm font-mono mb-4">
+          <div className={`bg-black/50 p-4 rounded text-sm font-mono mb-4 ${darkMode ? "bg-[#0a0f1c] text-white" : "bg-white text-black"}`}>
             <p className="mb-1 text-green-400 font-bold">🎮 {currentPlayer.name}</p>
-            <p>⚡ Énergie : <span className="text-yellow-300">{energy}</span> 
-             🧬 Biomasse : <span className="text-pink-300">{biomass}</span>
-             ⏳ Tour : <span className="text-gray-300">{turn}</span></p>
+            <p>⚡ Énergie : <span className={`${darkMode ? "bg-[#0a0f1c] text-white" : "bg-white text-black"}`}>{energy}</span> 
+             🧬 Biomasse : <span className={`${darkMode ? "bg-[#0a0f1c] text-white" : "bg-white text-black"}`}>{biomass}</span>
+             ⏳ Tour : <span className={`${darkMode ? "bg-[#0a0f1c] text-white" : "bg-white text-black"}`}>{turn}</span></p>
           </div>
 
           <Grid map={map} onCellClick={handleCellClick} showBases />
@@ -186,34 +186,33 @@ function App() {
           </div>
         </div>
 
-        {/* Colonne droite = Historique */}
-        <div className="w-full flex flex-col bg-[#111827] p-4 rounded max-h-[calc(100vh-100px)] overflow-hidden">
-          <div className="sticky top-0 z-10 bg-[#111827] pb-2">
-            <h2 className="text-xl font-bold mb-3">📜 Historique</h2>
-            <div className="flex gap-2 mb-2 text-xs flex-wrap">
-              {['all', ...players.map(p => p.id)].map(p => (
-                <button
-                  key={p}
-                  onClick={() => setFilter(p)}
-                  className={`px-2 py-1 rounded border ${filter === p ? 'bg-blue-500 text-white' : 'bg-transparent text-gray-300 hover:bg-gray-700'}`}
-                >
-                  {p === 'all' ? 'Tous' : players.find(pl => pl.id === p)?.name || p}
-                </button>
-              ))}
-            </div>
-          </div>
+        <div className={`w-full flex flex-col p-4 rounded max-h-[calc(100vh-100px)] overflow-hidden ${darkMode ? "bg-[#0a0f1c] text-white" : "bg-white text-black"}`}>
+  <div className="sticky top-0 z-10 pb-2">
+    <h2 className="text-xl font-bold mb-3">📜 Historique</h2>
+    <div className="flex gap-2 mb-2 text-xs flex-wrap">
+      {['all', ...players.map(p => p.id)].map(p => (
+        <button
+          key={p}
+          onClick={() => setFilter(p)}
+          className={`px-2 py-1 rounded border ${filter === p ? 'bg-blue-500 text-white' : 'bg-transparent text-gray-300 hover:bg-gray-700'}`}
+        >
+          {p === 'all' ? 'Tous' : players.find(pl => pl.id === p)?.name || p}
+        </button>
+      ))}
+    </div>
+  </div>
 
-          <div className="flex flex-col gap-1 text-sm overflow-y-auto pr-2">
-            {filteredLog.length === 0 ? (
-              <p className="text-gray-500 italic">Aucun événement pour l’instant.</p>
-            ) : (
-              filteredLog.slice().reverse().map((entry, i) => (
-                <div key={i} className="text-gray-300 whitespace-pre-wrap">{entry}</div>
-              ))
-            )}
-            <div ref={logEndRef} />
-          </div>
-        </div>
+  <div className="flex flex-col gap-1 text-sm overflow-y-auto pr-2">
+    {filteredLog.length === 0 ? (
+      <p className={`text-gray-500 italic${darkMode ? "bg-[#0a0f1c] text-white" : "bg-white text-black"}`}>Aucun événement pour l’instant.</p>
+    ) : (
+      filteredLog.slice().reverse().map((entry, i) => (
+        <div key={i} className={`text-gray-500 italic${darkMode ? "bg-[#0a0f1c] text-white" : "bg-white text-black"}`}>{entry}</div>
+      ))
+    )}
+    <div ref={logEndRef} />
+  </div>
+</div>
       </div>
       {showGuide && (
   <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
