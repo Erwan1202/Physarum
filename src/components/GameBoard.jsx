@@ -216,30 +216,114 @@ function App() {
       </div>
       {showGuide && (
   <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
-    <div className="bg-white text-black dark:bg-gray-900 dark:text-white max-w-xl w-full p-6 rounded shadow-xl overflow-y-auto max-h-[80vh] relative">
+    <div className="bg-white text-black dark:bg-gray-900 dark:text-white max-w-3xl w-full p-8 rounded shadow-xl overflow-y-auto max-h-[90vh] relative">
       <button
         onClick={() => setShowGuide(false)}
-        className="absolute top-2 right-2 text-gray-400 hover:text-white text-xl font-bold"
+        className="absolute top-4 right-4 text-gray-400 hover:text-white text-2xl font-bold"
       >
         ✖
       </button>
-      <h2 className="text-2xl font-bold mb-4">📖 Guide de jeu</h2>
-      <div className="text-sm space-y-2 leading-relaxed">
-        <p><strong>🎯 Objectif :</strong> Conquérir toute la carte ou éliminer tous les bots.</p>
-        <p><strong>🕹️ Contrôles :</strong></p>
-        <ul className="list-disc list-inside ml-4">
-          <li><strong>Clic gauche :</strong> propagation / attaque</li>
-          <li><strong>Double clic :</strong> construire une base</li>
-          <li><strong>Menu :</strong> détruire la base si sélectionnée</li>
-        </ul>
-        <p><strong>🔄 Fin de tour :</strong> Bouton "Fin de tour" pour passer à l’adversaire.</p>
-        <p><strong>⚡ Ressources :</strong> énergie (propagation, construction), biomasse (score)</p>
-        <p><strong>🏁 Victoire :</strong> être le dernier joueur encore en vie</p>
-        <p><strong>💡 Astuce :</strong> Plus tu construis de bases, plus tu gagnes d’énergie chaque tour !</p>
+      <h2 className="text-3xl font-bold mb-6 text-center">🎮 Guide de jeu — <em>Battle Grid: Physarum</em></h2>
+      
+      <div className="text-sm space-y-6 leading-relaxed">
+        
+        <section>
+          <h3 className="text-xl font-semibold mb-2">🧠 Objectif du jeu</h3>
+          <p>Dominer la grille en propageant ton organisme, en absorbant de la biomasse et en éliminant les bots ennemis. Tu gagnes si <strong>tous les bots sont éliminés</strong> ou si tu es le <strong>dernier joueur en vie</strong>.</p>
+        </section>
+
+        <hr className="border-gray-600" />
+
+        <section>
+          <h3 className="text-xl font-semibold mb-2">🕹️ Contrôles et actions</h3>
+          <p><strong>✅ Clic gauche sur une case :</strong></p>
+          <ul className="list-disc list-inside ml-4">
+            <li>Si elle est adjacente : propagation simple ou attaque aléatoire.</li>
+            <li>Si elle n’est pas adjacente : l’action échoue.</li>
+          </ul>
+          <p className="mt-2 italic text-yellow-400">Chaque propagation coûte 1 ⚡ énergie (ou 3⚡ pour un assaut).</p>
+
+          <p className="mt-4"><strong>🟢 Double clic sur une case à toi :</strong></p>
+          <ul className="list-disc list-inside ml-4">
+            <li>Construit une base.</li>
+            <li>Coût : 2 ⚡ énergie.</li>
+            <li>Effet : +1⚡ par base à chaque tour.</li>
+          </ul>
+
+          <p className="mt-4"><strong>❌ Destruction de base :</strong></p>
+          <ul className="list-disc list-inside ml-4">
+            <li>Clique sur ta case avec une base.</li>
+            <li>Utilise le bouton 💥 Détruire la base.</li>
+            <li>Tu regagnes 2 ⚡ énergie.</li>
+          </ul>
+        </section>
+
+        <hr className="border-gray-600" />
+
+        <section>
+          <h3 className="text-xl font-semibold mb-2">🔄 Fin de tour</h3>
+          <p>Clique sur <strong>"Fin de tour"</strong> pour :</p>
+          <ul className="list-disc list-inside ml-4">
+            <li>Terminer ton tour.</li>
+            <li>Gagner de l’énergie et de la biomasse selon tes territoires.</li>
+            <li>Laisser le bot suivant jouer automatiquement.</li>
+          </ul>
+        </section>
+
+        <hr className="border-gray-600" />
+
+        <section>
+          <h3 className="text-xl font-semibold mb-2">🧾 Ressources</h3>
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="border-b border-gray-500">
+                <th className="py-2 px-4 text-left">Ressource</th>
+                <th className="py-2 px-4 text-left">Gagnée comment ?</th>
+                <th className="py-2 px-4 text-left">Utilisée pour...</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-gray-700">
+                <td className="py-2 px-4">⚡ Énergie</td>
+                <td className="py-2 px-4">Par territoires + bases</td>
+                <td className="py-2 px-4">Propager, construire</td>
+              </tr>
+              <tr>
+                <td className="py-2 px-4">🧬 Biomasse</td>
+                <td className="py-2 px-4">Par territoires</td>
+                <td className="py-2 px-4">Mesure ton expansion (score)</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <hr className="border-gray-600" />
+
+        <section>
+          <h3 className="text-xl font-semibold mb-2">🧠 Astuces</h3>
+          <ul className="list-disc list-inside ml-4">
+            <li>Construis des bases dans des zones protégées pour maximiser ton gain d’énergie.</li>
+            <li>Attaque les bots faibles en priorité pour prendre l’avantage.</li>
+            <li><strong>Attention :</strong> tu ne peux effectuer que 2 actions par tour!</li>
+            <li>Une propagation peut échouer, prévois toujours un peu d’énergie en réserve.</li>
+          </ul>
+        </section>
+
+        <hr className="border-gray-600" />
+
+        <section>
+          <h3 className="text-xl font-semibold mb-2">💀 Conditions de défaite</h3>
+          <ul className="list-disc list-inside ml-4">
+            <li>Tu perds si tu n’as plus aucun territoire.</li>
+            <li>Tu gagnes si tous les bots sont éliminés.</li>
+          </ul>
+        </section>
+
       </div>
     </div>
   </div>
 )}
+
 
     </div>
   )
